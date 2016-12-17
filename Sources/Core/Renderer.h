@@ -1,7 +1,9 @@
 
 #pragma once
 
-class Render
+#include "Common.h"
+
+class Renderer
 {
 public:
 	enum VariableType
@@ -44,6 +46,8 @@ public:
 	};
 
 private:
+	ApplicationSettings appSettings;
+
 	void *index_array = nullptr;
 	int index_array_gl_type;
 
@@ -62,15 +66,13 @@ private:
 	bool tc_array_enabled = false;
 	bool index_array_enabled = false;
 
-	// TODO: init in constructor
-	// TODO: release in destructor
-
+private:
+	Renderer(const ApplicationSettings& settings);
+	
 public:
-	Render(int width, int height);
-
-	bool Init(I32 width, I32 height);
-	void Release();
-
+	static Renderer* Renderer::Create(const ApplicationSettings& settings);
+	~Renderer();
+	
 	void CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest);
 	void BindTexture(U32 texture_id);
 	void DeleteTexture(U32 *texture_id_ptr);
@@ -78,6 +80,7 @@ public:
 	void SetActiveTextureLayer(int layer);
 
 	void Clear(float r, float g, float b, float a);
+	void SwapBuffers();
 
 	void SetMatrixMode(enum TRMatrixMode matrix_mode);
 	void ResetMatrix();

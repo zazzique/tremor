@@ -7,32 +7,128 @@
 #include "Common.h"
 #include "FastMath.h"
 #include "Vector.h"
-#include "Render.h"
+#include "Renderer.h"
 
+HGLRC hRC = nullptr;
+HDC hDC = nullptr;
 
-int RenderGL10_GetGLType(Render::VariableType type)
+bool RendererGL10_Init(HWND hWnd);
+void RendererGL10_Release(HWND hWnd);
+void RendererGL10_SwapBuffers();
+
+bool RendererGL10_Init(HWND hWnd)
+{
+	GLuint		PixelFormat;
+
+	static PIXELFORMATDESCRIPTOR pfd =
+	{
+		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
+		1,								// Version Number
+		PFD_DRAW_TO_WINDOW |			// Format Must Support Window
+		PFD_SUPPORT_OPENGL |			// Format Must Support OpenGL
+		PFD_DOUBLEBUFFER,				// Must Support Double Buffering
+		PFD_TYPE_RGBA,					// Request An RGBA Format
+		32,								// Select Our Color Depth
+		0, 0, 0, 0, 0, 0,				// Color Bits Ignored
+		0,								// No Alpha Buffer
+		0,								// Shift Bit Ignored
+		0,								// No Accumulation Buffer
+		0, 0, 0, 0,						// Accumulation Bits Ignored
+		16,								// 16Bit Z-Buffer (Depth Buffer)
+		0,								// No Stencil Buffer
+		0,								// No Auxiliary Buffer
+		PFD_MAIN_PLANE,					// Main Drawing Layer
+		0,								// Reserved
+		0, 0, 0							// Layer Masks Ignored
+	};		
+
+	if (!(hDC = GetDC(hWnd)))
+	{
+		RendererGL10_Release(hWnd);
+		MessageBox(nullptr, "Can't Create A GL Device Context.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
+		return nullptr;
+	}		
+
+	if (!(PixelFormat = ChoosePixelFormat(hDC, &pfd)))
+	{
+		RendererGL10_Release(hWnd);
+		MessageBox(nullptr, "Can't Find A Suitable PixelFormat.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
+		return false;
+	}		
+
+	if(!SetPixelFormat(hDC, PixelFormat, &pfd))
+	{
+		RendererGL10_Release(hWnd);
+		MessageBox(nullptr, "Can't Set The PixelFormat.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}		
+	
+	if (!(hRC = wglCreateContext(hDC)))
+	{
+		RendererGL10_Release(hWnd);
+		MessageBox(nullptr, "Can't Create A GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}		
+	
+	if(!wglMakeCurrent(hDC, hRC))
+	{
+		RendererGL10_Release(hWnd);
+		MessageBox(nullptr, "Can't Activate The GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
+		return false;
+	}
+
+	return true;
+}
+
+void RendererGL10_Release(HWND hWnd)
+{
+	if (hRC)
+	{		
+		if (!wglMakeCurrent(nullptr, nullptr))
+		{		
+			MessageBox(nullptr, "Release Of DC And RC Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+		}		
+
+		if (!wglDeleteContext(hRC))
+		{		
+			MessageBox(nullptr, "Release Rendering Context Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+		}
+
+		hRC = nullptr;
+	}		
+
+	ReleaseDC(hWnd, hDC);
+}
+
+void RendererGL10_SwapBuffers()
+{
+	if (hDC)
+		SwapBuffers(hDC);
+}
+
+int RendererGL10_GetGLType(Renderer::VariableType type)
 {
 	int result = GL_FLOAT;
 
 	switch (type)
 	{
-		case Render::VariableType::UNSIGNED_BYTE:
+		case Renderer::VariableType::UNSIGNED_BYTE:
             result = GL_UNSIGNED_BYTE;
             break;
 
-		case Render::VariableType::BYTE:
+		case Renderer::VariableType::BYTE:
             result = GL_BYTE;
             break;
 
-		case Render::VariableType::UNSIGNED_SHORT:
+		case Renderer::VariableType::UNSIGNED_SHORT:
             result = GL_UNSIGNED_SHORT;
             break;
 
-		case Render::VariableType::SHORT:
+		case Renderer::VariableType::SHORT:
             result = GL_SHORT;
             break;
 
-		case Render::VariableType::FLOAT:
+		case Renderer::VariableType::FLOAT:
             result = GL_FLOAT;
             break;
 	}
@@ -40,37 +136,37 @@ int RenderGL10_GetGLType(Render::VariableType type)
 	return result;
 }
 
-int RenderGL10_GetGLPrimitiveType(Render::PrimitiveType type)
+int RendererGL10_GetGLPrimitiveType(Renderer::PrimitiveType type)
 {
 	int result = GL_POINTS;
 
 	switch (type)
 	{
-		case Render::PrimitiveType::POINTS:
+		case Renderer::PrimitiveType::POINTS:
             result = GL_POINTS;
             break;
 
-		case Render::PrimitiveType::LINES:
+		case Renderer::PrimitiveType::LINES:
             result = GL_LINES;
             break;
 
-		case Render::PrimitiveType::LINE_LOOP:
+		case Renderer::PrimitiveType::LINE_LOOP:
             result = GL_LINE_LOOP;
             break;
 
-		case Render::PrimitiveType::LINE_STRIP:
+		case Renderer::PrimitiveType::LINE_STRIP:
             result = GL_LINE_STRIP;
             break;
 
-		case Render::PrimitiveType::TRIANGLES:
+		case Renderer::PrimitiveType::TRIANGLES:
             result = GL_TRIANGLES;
             break;
 
-		case Render::PrimitiveType::TRIANGLE_STRIP:
+		case Renderer::PrimitiveType::TRIANGLE_STRIP:
             result = GL_TRIANGLE_STRIP;
             break;
 
-		case Render::PrimitiveType::TRIANGLE_FAN:
+		case Renderer::PrimitiveType::TRIANGLE_FAN:
             result = GL_TRIANGLE_FAN;
             break;
 	}
@@ -78,41 +174,41 @@ int RenderGL10_GetGLPrimitiveType(Render::PrimitiveType type)
 	return result;
 }
 
-int RenderGL10_GetGLBlendType(Render::BlendType type)
+int RendererGL10_GetGLBlendType(Renderer::BlendType type)
 {
 	int result = GL_ZERO;
     
 	switch (type)
 	{
-		case Render::BlendType::ZERO:
+		case Renderer::BlendType::ZERO:
             result = GL_ZERO;
             break;
             
-        case Render::BlendType::ONE:
+        case Renderer::BlendType::ONE:
             result = GL_ONE;
             break;
             
-        case Render::BlendType::SRC_COLOR:
+        case Renderer::BlendType::SRC_COLOR:
             result = GL_SRC_COLOR;
             break;
 
-		case Render::BlendType::ONE_MINUS_SRC_COLOR:
+		case Renderer::BlendType::ONE_MINUS_SRC_COLOR:
             result = GL_ONE_MINUS_SRC_COLOR;
             break;
 
-		case Render::BlendType::ONE_MINUS_DST_COLOR:
+		case Renderer::BlendType::ONE_MINUS_DST_COLOR:
             result = GL_ONE_MINUS_DST_COLOR;
             break;
             
-        case Render::BlendType::SRC_ALPHA:
+        case Renderer::BlendType::SRC_ALPHA:
             result = GL_SRC_ALPHA;
             break;
             
-        case Render::BlendType::ONE_MINUS_SRC_ALPHA:
+        case Renderer::BlendType::ONE_MINUS_SRC_ALPHA:
             result = GL_ONE_MINUS_SRC_ALPHA;
             break;
             
-        case Render::BlendType::DST_COLOR:
+        case Renderer::BlendType::DST_COLOR:
             result = GL_DST_COLOR;
             break;
 	}
@@ -121,10 +217,19 @@ int RenderGL10_GetGLBlendType(Render::BlendType type)
 }
 
 
-bool Render::Init(I32 width, I32 height)
+Renderer* Renderer::Create(const ApplicationSettings& settings)
 {
-	viewport_width = width;
-	viewport_height = height;
+	Renderer* result = nullptr;
+
+
+}
+
+Renderer::Renderer(const ApplicationSettings& settings)
+{
+	appSettings = settings;
+
+	viewport_width = settings.screen_width;
+	viewport_height = settings.screen_height;
     
     force_mode = true;
 
@@ -134,30 +239,33 @@ bool Render::Init(I32 width, I32 height)
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    Render::EnableDepthMask();
+    Renderer::EnableDepthMask();
 	glDepthFunc(GL_LEQUAL);
-	Render::EnableDepthTest();
+	Renderer::EnableDepthTest();
 	glEnable(GL_CULL_FACE);
-	Render::SetBlendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
-	Render::DisableBlend();
+	Renderer::SetBlendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
+	Renderer::DisableBlend();
     glAlphaFunc(GL_GREATER, 0.0f);
-    Render::DisableAlphaTest();
+    Renderer::DisableAlphaTest();
 
-	Render::EnableVertexArray();
-    Render::EnableColorArray();
-    Render::EnableTexCoordArray();
-    Render::DisableIndexArray();
+	Renderer::EnableVertexArray();
+    Renderer::EnableColorArray();
+    Renderer::EnableTexCoordArray();
+    Renderer::DisableIndexArray();
 
-    Render::EnableTextures();
+    Renderer::EnableTextures();
 
 	force_mode = false;
-
-	return true;
 }
 
-void Render::CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest)
+Renderer::~Renderer()
 {
-    Render::EnableTextures();
+	RendererGL10_Release(appSettings.hWnd);
+}
+
+void Renderer::CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest)
+{
+    Renderer::EnableTextures();
     
 	GLint pixel_format;
 	if (bpp == 8)
@@ -191,18 +299,18 @@ void Render::CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 h
 	glGetError();
 }
 
-void Render::BindTexture(U32 texture_id)
+void Renderer::BindTexture(U32 texture_id)
 {
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 
-void Render::DeleteTexture(U32 *texture_id_ptr)
+void Renderer::DeleteTexture(U32 *texture_id_ptr)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, (GLuint *)texture_id_ptr);
 }
 
-void Render::SetActiveTextureLayer(int layer)
+void Renderer::SetActiveTextureLayer(int layer)
 {
     if (layer < 0 || layer > 7)
         return;
@@ -263,13 +371,13 @@ void Render::SetActiveTextureLayer(int layer)
     }
 }
 
-void Render::Clear(float r, float g, float b, float a)
+void Renderer::Clear(float r, float g, float b, float a)
 {
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Render::SetMatrixMode(enum TRMatrixMode matrix_mode)
+void Renderer::SetMatrixMode(enum TRMatrixMode matrix_mode)
 {
 	GLenum gl_matrix_mode = GL_MODELVIEW;
 
@@ -289,17 +397,17 @@ void Render::SetMatrixMode(enum TRMatrixMode matrix_mode)
 	glMatrixMode(gl_matrix_mode);
 }
 
-void Render::ResetMatrix()
+void Renderer::ResetMatrix()
 {
 	glLoadIdentity();
 }
 
-void Render::SetMatrix(const float *m)
+void Renderer::SetMatrix(const float *m)
 {
 	glLoadMatrixf(m);
 }
 
-void Render::GetMatrix(enum TRMatrixMode matrix_mode, float *m)
+void Renderer::GetMatrix(enum TRMatrixMode matrix_mode, float *m)
 {
 	GLenum gl_matrix_mode = GL_MODELVIEW_MATRIX;
 
@@ -319,44 +427,44 @@ void Render::GetMatrix(enum TRMatrixMode matrix_mode, float *m)
 	glGetFloatv(gl_matrix_mode, m);
 }
 
-void Render::MatrixTranslate(float x, float y, float z)
+void Renderer::MatrixTranslate(float x, float y, float z)
 {
 	glTranslatef(x, y, z);
 }
 
-void Render::MatrixRotate(float angle, float x, float y, float z)
+void Renderer::MatrixRotate(float angle, float x, float y, float z)
 {
 	glRotatef(angle, x, y, z);
 }
 
-void Render::MatrixScale(float x, float y, float z)
+void Renderer::MatrixScale(float x, float y, float z)
 {
 	glScalef(x, y, z);
 }
 
-void Render::PushMatrix()
+void Renderer::PushMatrix()
 {
 	glPushMatrix();
 }
 
-void Render::PopMatrix()
+void Renderer::PopMatrix()
 {
 	glPopMatrix();
 }
 
-void Render::SetProjectionOrtho()
+void Renderer::SetProjectionOrtho()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-	float scale = 0.5f / coreVariables.pixel_scale;
+	float scale = 0.5f / appSettings.pixel_scale;
     
 	glOrtho(-viewport_width * scale, viewport_width * scale, -viewport_height * scale, viewport_height * scale, -2048.0f, 2048.0f);
     
 	glTranslatef(-viewport_width * scale, -viewport_height * scale, 0.0f);
 }
 
-void Render::SetProjectionFrustum(float z_near, float z_far, float fov_x, float fov_y) // TODO: is it works
+void Renderer::SetProjectionFrustum(float z_near, float z_far, float fov_x, float fov_y) // TODO: is it works
 {
     GLfloat size_x, size_y;
     size_y = z_near * tanf(DEG2RAD(fov_y) * 0.5f);
@@ -368,27 +476,27 @@ void Render::SetProjectionFrustum(float z_near, float z_far, float fov_x, float 
     glFrustum(-size_x, size_x, -size_y, size_y, z_near, z_far);
 }
 
-void Render::SetColor(float r, float g, float b, float a)
+void Renderer::SetColor(float r, float g, float b, float a)
 {
 	glColor4f(r, g, b, a);
 }
 
-void Render::SetBlendFunc(BlendType sfactor, BlendType dfactor)
+void Renderer::SetBlendFunc(BlendType sfactor, BlendType dfactor)
 {
-    glBlendFunc(RenderGL10_GetGLBlendType(sfactor), RenderGL10_GetGLBlendType(dfactor));
+    glBlendFunc(RendererGL10_GetGLBlendType(sfactor), RendererGL10_GetGLBlendType(dfactor));
 }
 
-void Render::EnableFaceCulling()
+void Renderer::EnableFaceCulling()
 {
 	glEnable(GL_CULL_FACE);
 }
 
-void Render::DisableFaceCulling()
+void Renderer::DisableFaceCulling()
 {
 	glDisable(GL_CULL_FACE);
 }
 
-void Render::EnableTextures()
+void Renderer::EnableTextures()
 {
 	if (!textures_enabled || force_mode)
 	{
@@ -397,7 +505,7 @@ void Render::EnableTextures()
 	}
 }
 
-void Render::DisableTextures()
+void Renderer::DisableTextures()
 {
 	if (textures_enabled || force_mode)
 	{
@@ -406,7 +514,7 @@ void Render::DisableTextures()
 	}
 }
 
-void Render::EnableBlend()
+void Renderer::EnableBlend()
 {
 	if (!blend_enabled || force_mode)
 	{
@@ -415,7 +523,7 @@ void Render::EnableBlend()
 	}
 }
 
-void Render::DisableBlend()
+void Renderer::DisableBlend()
 {
 	if (blend_enabled || force_mode)
 	{
@@ -424,7 +532,7 @@ void Render::DisableBlend()
 	}
 }
 
-void Render::EnableDepthMask()
+void Renderer::EnableDepthMask()
 {
 	if (!depth_mask_enabled || force_mode)
 	{
@@ -433,7 +541,7 @@ void Render::EnableDepthMask()
 	}
 }
 
-void Render::DisableDepthMask()
+void Renderer::DisableDepthMask()
 {
 	if (depth_mask_enabled || force_mode)
 	{
@@ -442,7 +550,7 @@ void Render::DisableDepthMask()
 	}
 }
 
-void Render::EnableDepthTest()
+void Renderer::EnableDepthTest()
 {
 	if (!depth_test_enabled || force_mode)
 	{
@@ -451,7 +559,7 @@ void Render::EnableDepthTest()
 	}
 }
 
-void Render::DisableDepthTest()
+void Renderer::DisableDepthTest()
 {
 	if (depth_test_enabled || force_mode)
 	{
@@ -460,7 +568,7 @@ void Render::DisableDepthTest()
 	}
 }
 
-void Render::EnableAlphaTest()
+void Renderer::EnableAlphaTest()
 {
 	if (!alpha_test_enabled || force_mode)
 	{
@@ -469,7 +577,7 @@ void Render::EnableAlphaTest()
 	}
 }
 
-void Render::DisableAlphaTest()
+void Renderer::DisableAlphaTest()
 {
 	if (alpha_test_enabled || force_mode)
 	{
@@ -478,7 +586,7 @@ void Render::DisableAlphaTest()
 	}
 }
 
-void Render::EnableVertexArray()
+void Renderer::EnableVertexArray()
 {
 	if (!vertex_array_enabled || force_mode)
 	{
@@ -487,7 +595,7 @@ void Render::EnableVertexArray()
 	}
 }
 
-void Render::DisableVertexArray()
+void Renderer::DisableVertexArray()
 {
 	if (vertex_array_enabled || force_mode)
 	{
@@ -496,7 +604,7 @@ void Render::DisableVertexArray()
 	}
 }
 
-void Render::EnableColorArray()
+void Renderer::EnableColorArray()
 {
 	if (!color_array_enabled || force_mode)
 	{
@@ -505,7 +613,7 @@ void Render::EnableColorArray()
 	}
 }
 
-void Render::DisableColorArray()
+void Renderer::DisableColorArray()
 {
 	if (color_array_enabled || force_mode)
 	{
@@ -514,7 +622,7 @@ void Render::DisableColorArray()
 	}
 }
 
-void Render::EnableTexCoordArray()
+void Renderer::EnableTexCoordArray()
 {
 	if (!tc_array_enabled || force_mode)
 	{
@@ -523,7 +631,7 @@ void Render::EnableTexCoordArray()
 	}
 }
 
-void Render::DisableTexCoordArray()
+void Renderer::DisableTexCoordArray()
 {
 	if (tc_array_enabled || force_mode)
 	{
@@ -532,53 +640,53 @@ void Render::DisableTexCoordArray()
 	}
 }
 
-void Render::EnableIndexArray()
+void Renderer::EnableIndexArray()
 {
 	index_array_enabled = true;
 }
 
-void Render::DisableIndexArray()
+void Renderer::DisableIndexArray()
 {
 	index_array_enabled = false;
 }
 
-void Render::SetVertexArray(void *pointer, int size, VariableType type, int stride)
+void Renderer::SetVertexArray(void *pointer, int size, VariableType type, int stride)
 {
-	glVertexPointer(size, RenderGL10_GetGLType(type), stride, pointer);
+	glVertexPointer(size, RendererGL10_GetGLType(type), stride, pointer);
 }
 
-void Render::SetColorArray(void *pointer, int size, VariableType type, int stride)
+void Renderer::SetColorArray(void *pointer, int size, VariableType type, int stride)
 {
-	glColorPointer(size, RenderGL10_GetGLType(type), stride, pointer);
+	glColorPointer(size, RendererGL10_GetGLType(type), stride, pointer);
 }
 
-void Render::SetTexCoordArray(void *pointer, int size, VariableType type, int stride)
+void Renderer::SetTexCoordArray(void *pointer, int size, VariableType type, int stride)
 {
-	glTexCoordPointer(size, RenderGL10_GetGLType(type), stride, pointer);
+	glTexCoordPointer(size, RendererGL10_GetGLType(type), stride, pointer);
 }
 
-void Render::SetIndexArray(void *pointer, VariableType type)
+void Renderer::SetIndexArray(void *pointer, VariableType type)
 {
 	index_array = pointer;
-	index_array_gl_type = RenderGL10_GetGLType(type);
+	index_array_gl_type = RendererGL10_GetGLType(type);
 }
 
-void Render::DrawArrays(PrimitiveType primitive_type, int vertex_count)
+void Renderer::DrawArrays(PrimitiveType primitive_type, int vertex_count)
 {
 	int e = glGetError();
 	if (index_array_enabled)
 	{
-		glDrawElements(RenderGL10_GetGLPrimitiveType(primitive_type), vertex_count, index_array_gl_type, index_array);
+		glDrawElements(RendererGL10_GetGLPrimitiveType(primitive_type), vertex_count, index_array_gl_type, index_array);
 	}
 	else
 	{
-		glDrawArrays(RenderGL10_GetGLPrimitiveType(primitive_type), 0, vertex_count);
+		glDrawArrays(RendererGL10_GetGLPrimitiveType(primitive_type), 0, vertex_count);
 	}
 	e = glGetError();
 }
 
-void Render::Release()
+void Renderer::SwapBuffers()
 {
-    //
+	RendererGL10_SwapBuffers();
 }
 
