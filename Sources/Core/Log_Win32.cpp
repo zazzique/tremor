@@ -4,7 +4,7 @@
 
 #include "Log.h"
 
-void LogPrint(const char * format, ...)
+void Log::Print(const char * format, ...)
 {
 	va_list args;
     va_start(args, format);

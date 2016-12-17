@@ -11,7 +11,7 @@
 #include "Font.h"
 #include "Sprites.h"
 #include "GUIControls.h"
-#include "Render.h"
+#include "Renderer.h"
 #include "Game.h"
 
 void Game_Init()

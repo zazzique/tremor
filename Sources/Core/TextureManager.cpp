@@ -5,13 +5,12 @@
 #include "Utils.h"
 #include "FastMath.h"
 #include "Vector.h"
-#include "Render.h"
 #include "TextureManager.h"
 
 
 #define MAX_TEX_COUNT 512
 
-typedef struct _TGAHeader
+struct TGAHeader
 {
 	U8  identsize;          // size of ID field that follows 18 byte header (0 usually)
 	U8  colourmaptype;      // type of colour map 0=none, 1=has palette
@@ -27,9 +26,9 @@ typedef struct _TGAHeader
 	U16 height;             // image height in pixels
 	U8  bits;               // image bits per pixel 8,16,24,32
 	U8  descriptor;         // image descriptor bits (vh flip bits)
-} TGAHeader;
+};
 
-typedef struct _Texture
+struct Texture
 {
 	char filename[32];
 	U32 texture;
@@ -38,13 +37,10 @@ typedef struct _Texture
 	U32 flags;
 	bool loaded;
 	bool valid;
-}
-Texture;
+};
 
-Texture textures[MAX_TEX_COUNT];
+Texture textures[MAX_TEX_COUNT]; // TODO: use vector
 int current_texture_index;
-
-U8 palette[256][3];
 
 void TexManager_Init()
 {
@@ -55,21 +51,6 @@ void TexManager_Init()
 	}
 	
 	current_texture_index = -1;
-
-	FileHandler palette_file;
-
-	if (Files_OpenFile(&palette_file, "CHASM2.PAL"))
-	{
-		Files_Read(&palette_file, palette, 768);
-		Files_CloseFile(&palette_file);
-	}
-
-	for (int i = 0; i < 256; i ++)
-	{
-		palette[i][0] = CLAMP((U32)palette[i][0] * 4, 0, 255);
-		palette[i][1] = CLAMP((U32)palette[i][1] * 4, 0, 255);
-		palette[i][2] = CLAMP((U32)palette[i][2] * 4, 0, 255);
-	}
 }
 
 
@@ -103,7 +84,7 @@ int	TexManager_AddTexture(char *filename, U32 user_flags)
 	
 	if (index < 0)
 	{
-		LogPrint("Error: too many textures!\n");
+		Log::Print("Error: too many textures!\n");
 		return -1;
 	}
 
@@ -126,126 +107,6 @@ int	TexManager_AddTexture(char *filename, U32 user_flags)
 	return index;
 }
 
-int	 TexManager_AddTextureFromIndexedData(const U8* data, I32 width, I32 height, U32 user_flags, bool save)
-{
-	int index = -1;
-
-	if (data == nullptr)
-		return -1;
-	
-	for (int i = 0; i < MAX_TEX_COUNT; i++)
-	{
-		if (!textures[i].valid)
-		{
-			index = i;
-			break;
-		}
-	}
-	
-	if (index < 0)
-	{
-		LogPrint("Error: too many textures!\n");
-		return -1;
-	}
-
-	bool clamped = false;
-
-	if (user_flags & TEXTURE_FLAG_CLAMPED)
-		clamped = true;
-
-	bool nearest = false;
-
-	if (user_flags & TEXTURE_FLAG_NEAREST)
-		nearest = true;
-
-	
-	const I32 bits = 32;
-	
-	U8 *image_data = (U8 *)malloc(width * height * 4);
-
-	if (image_data == nullptr)
-		return -1;
-
-	int current_pos = 0;
-	
-	for (int i = 0; i < width * height; i ++)
-	{
-		U8 color_index = data[i];
-
-		image_data[current_pos + 0] = palette[color_index][0];
-		image_data[current_pos + 1] = palette[color_index][1];
-		image_data[current_pos + 2] = palette[color_index][2];
-		image_data[current_pos + 3] = (color_index == 0xff) ? 0x00 : 0xff;
-
-		current_pos += 4;
-	}
-	
-    Render_CreateTexture(&textures[index].texture, image_data, width, height, bits, false, 0, clamped, nearest);
-
-	////////////////////////////////
-
-	if (save)
-	{
-		int current_pos = 0;
-	
-		for (int i = 0; i < width * height; i ++)
-		{
-			U8 color_index = data[i];
-
-			image_data[current_pos + 0] = palette[color_index][2];
-			image_data[current_pos + 1] = palette[color_index][1];
-			image_data[current_pos + 2] = palette[color_index][0];
-			image_data[current_pos + 3] = (color_index == 0xff) ? 0x00 : 0xff;
-
-			current_pos += 4;
-		}
-
-		TGAHeader tga_header = { 0 };
-
-		tga_header.imagetype = 2;
-		tga_header.width = width;
-		tga_header.height = height;
-		tga_header.bits = 4 * 8;
-		tga_header.descriptor = 0x20;
-
-		FILE *rsc_fp = fopen("WALLS_1x_chasm.tga", "wb" );
-		if (rsc_fp != nullptr)
-		{
-			fwrite(&tga_header.identsize, 1, 1, rsc_fp);
-			fwrite(&tga_header.colourmaptype, 1, 1, rsc_fp);
-			fwrite(&tga_header.imagetype, 1, 1, rsc_fp);
-
-			fwrite(&tga_header.colourmapstart, 2, 1, rsc_fp);
-			fwrite(&tga_header.colourmaplength, 2, 1, rsc_fp);
-			fwrite(&tga_header.colourmapbits, 1, 1, rsc_fp);
-
-			fwrite(&tga_header.xstart, 2, 1, rsc_fp);
-			fwrite(&tga_header.ystart, 2, 1, rsc_fp);
-			fwrite(&tga_header.width, 2, 1, rsc_fp);
-			fwrite(&tga_header.height, 2, 1, rsc_fp);
-			fwrite(&tga_header.bits, 1, 1, rsc_fp);
-			fwrite(&tga_header.descriptor, 1, 1, rsc_fp);
- 
-			fwrite(image_data, tga_header.width * tga_header.height * (tga_header.bits / 8), 1, rsc_fp);
-
-			fclose(rsc_fp);
-		}
-	}
-	///////////////////////////////
-
-	free(image_data);
-	
-	textures[index].width = width;
-	textures[index].height = height;
-	
-	textures[index].flags = user_flags;
-	textures[index].loaded = true; // TODO: do not unload, or should be pointer to data
-
-	textures[index].valid = true;
-
-	return index;
-}
-
 bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool nearest)
 {
 	if (index < 0 || index >= MAX_TEX_COUNT)
@@ -261,16 +122,10 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 	FileHandler tex_file;
 
-	if (!Files_OpenFileAltType(&tex_file, filename, "crt"))
+	if (!Files_OpenFile(&tex_file, filename))
 	{
-		if (!Files_OpenFileAltType(&tex_file, filename, "pkm"))
-		{
-			if (!Files_OpenFileAltType(&tex_file, filename, "cel"))
-			{
-				LogPrint("Error: texture '%s' not found!\n", filename);
-				return false;
-			}
-		}
+		Log::Print("Error: texture '%s' not found!\n", filename);
+		return false;
 	}
 	
 	if (strcicmp(Files_GetFileExtension(&tex_file), "tga") == 0) // TGA files
@@ -292,14 +147,14 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		
 		if (header.colourmaptype != 0 || (header.imagetype != 2 && header.imagetype != 3))
 		{
-			LogPrint("Error: unsupported tga format!\n");
+			Log::Print("Error: unsupported tga format!\n");
 			Files_CloseFile(&tex_file);
 			return false;
 		}
 
 		if (header.width < 2 || header.height < 2)
 		{
-			LogPrint("Error: image is too small!\n");
+			Log::Print("Error: image is too small!\n");
 			Files_CloseFile(&tex_file);
 			return false;
 		}
@@ -312,7 +167,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 			if (image_data == nullptr)
 			{
-				LogPrint("Error: couldn't allocate memory!\n");
+				Log::Print("Error: couldn't allocate memory!\n");
 				Files_CloseFile(&tex_file);
 				return false;
 			}
@@ -341,7 +196,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 			if (image_data == nullptr)
 			{
-				LogPrint("Error: couldn't allocate memory!\n");
+				Log::Print("Error: couldn't allocate memory!\n");
 				Files_CloseFile(&tex_file);
 				return false;
 			}
@@ -373,7 +228,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 			if (image_data == nullptr)
 			{
-				LogPrint("Error: couldn't allocate memory!\n");
+				Log::Print("Error: couldn't allocate memory!\n");
 				Files_CloseFile(&tex_file);
 				return false;
 			}
@@ -413,7 +268,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 		if (header[0] != 'P' || header[1] != 'K' || header[2] != 'M' || header[3] != ' ')
 		{
-			LogPrint("Error: unsupported texture format!\n");
+			Log::Print("Error: unsupported texture format!\n");
 			Files_CloseFile(&tex_file);
 			return false;
 		}
@@ -434,7 +289,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 		if (image_data == nullptr)
 		{
-			LogPrint("Error: couldn't get texture data!\n");
+			Log::Print("Error: couldn't get texture data!\n");
 			Files_CloseFile(&tex_file);
 			return false;
 		}
@@ -448,95 +303,9 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		textures[index].width = width;
 		textures[index].height = height;
 	}
-	else if (strcicmp(Files_GetFileExtension(&tex_file), "cel") == 0) // CEL files
-	{
-		const I32 bits = 32;
-
-		U16 width, height;
-
-		Files_Skip(&tex_file, sizeof(U16));
-		Files_Read(&tex_file, &width, sizeof(U16));
-		Files_Read(&tex_file, &height, sizeof(U16));
-		Files_Skip(&tex_file, 26);
-		Files_Skip(&tex_file, 768);
-
-		U8 *image_data = (U8 *)malloc(width * height * 4);
-
-		if (image_data == nullptr)
-		{
-			LogPrint("Error: couldn't allocate memory!\n");
-			Files_CloseFile(&tex_file);
-			return false;
-		}
-
-		int current_pos = 0;
-		
-		for (j = 0; j < height; j++)
-		{
-			for (i = 0; i < width; i++)
-			{
-				U8 color_index;
-				Files_Read(&tex_file, &color_index, sizeof(U8));
-
-				image_data[current_pos + 0] = palette[color_index][0] * 4;
-				image_data[current_pos + 1] = palette[color_index][1] * 4;
-				image_data[current_pos + 2] = palette[color_index][2] * 4;
-				image_data[current_pos + 3] = (color_index == 0xff) ? 0x00 : 0xff;
-
-				current_pos += 4;
-			}
-		}
-		
-        Render_CreateTexture(&textures[index].texture, image_data, width, height, bits, false, 0, clamped, nearest);
-		
-		free(image_data);
-		
-		textures[index].width = width;
-		textures[index].height = height;
-	}
-	else if (strcicmp(Files_GetFileExtension(&tex_file), "crt") == 0) // CRT files
-	{
-		U16 width, height;
-		U8 bits;
-		
-		Files_Read(&tex_file, &width, sizeof(U16));
-		Files_Read(&tex_file, &height, sizeof(U16));
-		Files_Read(&tex_file, &bits, sizeof(U8));
-
-		U8 *image_data = nullptr;
-		Files_GetData(&tex_file, (void **)&image_data, nullptr);
-
-		if (image_data == nullptr)
-		{
-			LogPrint("Error: couldn't get texture data!\n");
-			Files_CloseFile(&tex_file);
-			return false;
-		}
-
-		if (bits & 128)
-		{
-			bits &= 127;
-
-			U32 pvrtc_rawsize = 0;
-			Files_Read(&tex_file, &pvrtc_rawsize, sizeof(U32));
-			
-			I32 current_pos = Files_GetCurrentPos(&tex_file);
-
-			Render_CreateTexture(&textures[index].texture, &image_data[current_pos], width, height, bits, true, pvrtc_rawsize, clamped, nearest);
-		}
-		else
-		{
-			I32 current_pos = Files_GetCurrentPos(&tex_file);
-
-            Render_CreateTexture(&textures[index].texture, &image_data[current_pos], width, height, bits, false, 0, clamped, nearest);
-		}
-		
-		textures[index].width = width;
-		textures[index].height = height;
-	}
 	else
 	{
-		LogPrint("Error: unsupported texture format!\n");
+		Log::Print("Error: unsupported texture format!\n");
 		Files_CloseFile(&tex_file);
 		return false;
 	}
@@ -647,15 +416,6 @@ void TexManager_RemoveTextureByName(char *name)
 	int index = TexManager_GetTextureIndexByName(name);
 	
 	TexManager_RemoveTextureByIndex(index);
-}
-
-
-void TexManager_RemoveTexturesByFlag(U32 user_flag)
-{
-	for (int i = 0; i < MAX_TEX_COUNT; i++)
-		if (textures[i].valid)
-			if (textures[i].flags & user_flag)
-				TexManager_RemoveTextureByIndex(i);
 }
 
 

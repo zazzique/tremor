@@ -9,7 +9,7 @@
 #include "FastMath.h"
 #include "Vector.h"
 #include "TextureManager.h"
-#include "Render.h"
+#include "Renderer.h"
 #include "Font.h"
 
 #define MAX_FONTS_COUNT 8
@@ -105,42 +105,18 @@ void Font_Add(char *font_name)
 	
 	if (fonts_count >= MAX_FONTS_COUNT)
 	{
-		LogPrint("Error: too many fonts!\n");
+		Log::Print("Error: too many fonts!\n");
 		return;
 	}
 	
-	if ((!coreVariables.tablet) && (coreVariables.pixel_scale <= 1.0f))
-	{
-		fonts[fonts_count].default_scale = 1.0f;
+	fonts[fonts_count].default_scale = 1.0f;
 		
-		if (!Files_OpenFileOfType(&font_file, font_name, "fnt"))
-		{
-			LogPrint("Error: font '%s' not found!\n", font_name);
-			return;
-		}
-	}
-	else
+	if (!Files_OpenFileOfType(&font_file, font_name, "fnt"))
 	{
-		if (!coreVariables.tablet)
-			fonts[fonts_count].default_scale = 0.5f;
-		else
-			fonts[fonts_count].default_scale = 1.0f;
-
-		if (!Files_OpenFileOfType(&font_file, font_name, "fnthd"))
-		{
-			if (!coreVariables.tablet)
-				fonts[fonts_count].default_scale = 1.0f;
-			else
-				fonts[fonts_count].default_scale = 2.0f;
-			
-			if (!Files_OpenFileOfType(&font_file, font_name, "fnt"))
-			{
-				LogPrint("Error: font '%s' not found!\n", font_name);
-				return;
-			}
-		}
+		Log::Print("Error: font '%s' not found!\n", font_name);
+		return;
 	}
-
+	
 	int parsing_group = FONT_PG_INFO;
 	
 	int char_id = 0;
@@ -155,7 +131,7 @@ void Font_Add(char *font_name)
 
 	if (content == nullptr)
 	{
-		LogPrint("Error: font '%s' not found!\n", font_name);
+		Log::Print("Error: font '%s' not found!\n", font_name);
 		return;
 	}
 	
@@ -189,7 +165,7 @@ void Font_Add(char *font_name)
 				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				if (atoi(cur_exp) != 0)
 				{
-					LogPrint("Error: unicode fonts are not supported!\n");
+					Log::Print("Error: unicode fonts are not supported!\n");
 					succeed = false;
 					break;
 				}
@@ -242,7 +218,7 @@ void Font_Add(char *font_name)
 				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				if (atoi(cur_exp) != 1)
 				{
-					LogPrint("Error: too many pages in font!\n");
+					Log::Print("Error: too many pages in font!\n");
 					succeed = false;
 					break;
 				}
@@ -366,7 +342,7 @@ void Font_Add(char *font_name)
 				
 				if (fonts[fonts_count].kerning_table_size >= MAX_KERNINGS_COUNT)
 				{
-					LogPrint("Error: too many kernings!\n");
+					Log::Print("Error: too many kernings!\n");
 					succeed = false;
 					break;
 				}
@@ -474,7 +450,7 @@ void Font_PrintText(float x, float y, float text_scale, U32 text_color, char *te
 	
 	if (current_font < 0)
 	{
-		LogPrint("Error: font name not found!\n");
+		Log::Print("Error: font name not found!\n");
 		return;
 	}
 	
@@ -676,7 +652,7 @@ void Font_PrintText(float x, float y, float text_scale, U32 text_color, char *te
 }
 
 
-void Font_Render()
+void Font_Render() // TODO: use ui renderer
 {
 	Render_EnableTextures();
 	Render_EnableVertexArray();
@@ -722,7 +698,7 @@ void Font_GetTextSize(char *text, char *font_name, Vector2D *size)
 	
 	if (current_font < 0)
 	{
-		LogPrint("Error: font name not found!\n");
+		Log::Print("Error: font name not found!\n");
 		return;
 	}
 	

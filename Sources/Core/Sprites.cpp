@@ -4,7 +4,6 @@
 #include "Utils.h"
 #include "FastMath.h"
 #include "Vector.h"
-#include "Render.h"
 #include "TextureManager.h"
 #include "Sprites.h"
 
@@ -103,7 +102,7 @@ void Sprites_AddSprite(SpriteHandler *sprite_handler, char *texture, float tc_x,
 		}
 		else
 		{
-			LogPrint("Error: too many sprite groups!\n");
+			Log::Print("Error: too many sprite groups!\n");
 			sprite_handler = nullptr;
 			return;
 		}
@@ -113,7 +112,7 @@ void Sprites_AddSprite(SpriteHandler *sprite_handler, char *texture, float tc_x,
 	
 	if (current_sprite >= MAX_SPRITES_IN_GROUP)
 	{
-		LogPrint("Error: too many sprites in group!\n");
+		Log::Print("Error: too many sprites in group!\n");
 		sprite_handler = nullptr;
 		return;
 	}
@@ -140,19 +139,19 @@ void Sprites_DrawSprite(SpriteHandler *sprite_handler, float x, float y, float s
 {
 	if (sprite_handler == nullptr)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id < 0 || sprite_handler->group_id < 0 || sprite_handler->group_id >= sprite_groups_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id >= sprite_groups[sprite_handler->group_id].sprites_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
@@ -161,7 +160,7 @@ void Sprites_DrawSprite(SpriteHandler *sprite_handler, float x, float y, float s
 	
 	if (gptr->sprites_to_draw_count >= MAX_SPRITES_IN_ARRAY)
 	{
-		LogPrint("Error: too many sprites in array!\n");
+		Log::Print("Error: too many sprites in array!\n");
 		return;
 	}
 	
@@ -280,19 +279,19 @@ void Sprites_DrawSpriteEx(SpriteHandler *sprite_handler, float x, float y, float
 {
 	if (sprite_handler == nullptr)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id < 0 || sprite_handler->group_id < 0 || sprite_handler->group_id >= sprite_groups_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id >= sprite_groups[sprite_handler->group_id].sprites_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
@@ -301,7 +300,7 @@ void Sprites_DrawSpriteEx(SpriteHandler *sprite_handler, float x, float y, float
 	
 	if (gptr->sprites_to_draw_count >= MAX_SPRITES_IN_ARRAY)
 	{
-		LogPrint("Error: too many sprites in array!\n");
+		Log::Print("Error: too many sprites in array!\n");
 		return;
 	}
 	
@@ -420,19 +419,19 @@ void Sprites_GetSpriteSize(SpriteHandler *sprite_handler, Vector2D *size)
 {
 	if (sprite_handler == nullptr)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id < 0 || sprite_handler->group_id < 0 || sprite_handler->group_id >= sprite_groups_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id >= sprite_groups[sprite_handler->group_id].sprites_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
@@ -444,19 +443,19 @@ void Sprites_SetSpriteSize(SpriteHandler *sprite_handler, const Vector2D *size)
 {
 	if (sprite_handler == nullptr)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id < 0 || sprite_handler->group_id < 0 || sprite_handler->group_id >= sprite_groups_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
 	if (sprite_handler->sprite_id >= sprite_groups[sprite_handler->group_id].sprites_count)
 	{
-		LogPrint("Error: sprite not found!\n");
+		Log::Print("Error: sprite not found!\n");
 		return;
 	}
 	
@@ -464,9 +463,9 @@ void Sprites_SetSpriteSize(SpriteHandler *sprite_handler, const Vector2D *size)
 	sprite_groups[sprite_handler->group_id].sprites[sprite_handler->sprite_id].height = size->y;
 }
 
-void Sprites_DrawSpriteNow(SpriteHandler *sprite_handler, float x, float y, float scale, float angle, U32 color, U32 flags)
+void Sprites_DrawSpriteNow(SpriteHandler *sprite_handler, float x, float y, float scale, float angle, U32 color, U32 flags) // TODO: use ui renderer
 {
-	Sprites_DrawSprite(sprite_handler, x, y, scale, angle, color, flags);
+	/*Sprites_DrawSprite(sprite_handler, x, y, scale, angle, color, flags);
 
 	Render_EnableTextures();
 	Render_EnableVertexArray();
@@ -488,12 +487,12 @@ void Sprites_DrawSpriteNow(SpriteHandler *sprite_handler, float x, float y, floa
 		Render_DrawArrays(TR_TRIANGLES, 6);
 
 		sprite_groups[group].sprites_to_draw_count --;
-	}
+	}*/
 }
 
 void Sprites_Render()
 {
-	Render_EnableTextures();
+	/*Render_EnableTextures();
 	Render_EnableVertexArray();
 	Render_EnableColorArray();
 	Render_EnableTexCoordArray();
@@ -514,7 +513,7 @@ void Sprites_Render()
 		}
 		
 		sprite_groups[i].sprites_to_draw_count = 0;
-	}
+	}*/
 }
 
 void Sprites_Release()

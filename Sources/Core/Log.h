@@ -1,7 +1,10 @@
 
 #pragma once
 
-void LogPrint(const char * format, ...);
+namespace Log
+{
+	void Print(const char * format, ...);
+}
 
 
 

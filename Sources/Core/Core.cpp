@@ -5,7 +5,6 @@
 #include "Vector.h"
 #include "Files.h"
 #include "Timer.h"
-#include "Render.h"
 #include "TextureManager.h"
 #include "Font.h"
 #include "Sprites.h"
@@ -13,27 +12,17 @@
 #include "Game.h"
 #include "Core.h"
 
-float time_delta_buffer[16];
-
-void Core_Init(int init_screen_width, int init_screen_height, float init_pixel_scale, U32 init_screen_size)
+Core::Core(const ApplicationSettings& settings)
 {
-	coreVariables.Reset();
+	appSettings = settings;
 
-	coreVariables.debug_mode = false;
+	debug_mode = false;
 
-	coreVariables.pixel_scale = init_pixel_scale;
-	coreVariables.screen_size = init_screen_size;
+	viewport.width = ((float)appSettings.screen_width / appSettings.pixel_scale);
+	viewport.height = ((float)appSettings.screen_height / appSettings.pixel_scale);
 
-	coreVariables.screen_width = (int)((float)init_screen_width / init_pixel_scale);
-	coreVariables.screen_height = (int)((float)init_screen_height / init_pixel_scale);
-
-	coreVariables.screen_center_x = (float)coreVariables.screen_width * 0.5f;
-	coreVariables.screen_center_y = (float)coreVariables.screen_height * 0.5f;
-
-	if (coreVariables.screen_size >= SCREEN_SIZE_LARGE)
-		coreVariables.tablet = true;
-	else
-		coreVariables.tablet = false;
+	viewport.center_x = viewport.width * 0.5f;
+	viewport.center_y = viewport.height * 0.5f;
 
 	for (int i = 0; i < 16; i ++)
 	{
@@ -41,20 +30,33 @@ void Core_Init(int init_screen_width, int init_screen_height, float init_pixel_s
 	}
 
 	Files_Init();
-	//FastMath_Init();
-    //Sound_Init();
-	Render_Init(init_screen_width, init_screen_height);
+
+	renderer = Renderer::Create(appSettings);
+
 	TexManager_Init();
 	Font_Init();
 	Sprites_Init();
 	GUI_Init();
-	//ModelManager_Init();
 
 	Game_Init();
 }
 
+Core::~Core()
+{
+	Game_Release();
 
-void Core_Process()
+	GUI_Release();
+	Sprites_Release();
+	Font_Release();
+	TexManager_Release();
+
+	if (renderer != nullptr)
+		delete renderer;
+
+	Files_Release();
+}
+
+void Core::Process()
 {
 	double prev_time;
     static bool init_game = true;
@@ -87,68 +89,52 @@ void Core_Process()
 	if (time_delta_buffer[15] > 0.25f)
 		time_delta_buffer[15] = 0.25f;
 	
-	coreVariables.delta_t = 0.0f;
+	delta_t = 0.0f;
 		
 	for (int i = 0; i < 16; i ++)
 	{
-		coreVariables.delta_t += time_delta_buffer[i];
+		delta_t += time_delta_buffer[i];
 	}
 	
-	coreVariables.delta_t *= (1.0f / 16.0f);
+	delta_t *= (1.0f / 16.0f);
 
 	Game_Process();
 }
 
-void Core_Render()
+void Core::Render()
 {
 	Game_Render();
 	
     GUI_DrawControls();
     Sprites_Render();
     Font_Render();
-	GUI_RenderFade();
+
+	renderer->SwapBuffers();
 }
 
-
-void Core_Release()
-{
-	Game_Release();
-
-	GUI_Release();
-	Sprites_Release();
-	Font_Release();
-	TexManager_Release();
-	Render_Release();
-	Files_Release();
-}
-
-void Core_Pause()
+void Core::Pause()
 {
     Game_Pause();
 }
 
-void Core_RestoreResources()
+void Core::RestoreResources()
 {
-	Render_Init((U32)(coreVariables.screen_width * coreVariables.pixel_scale), (U32)(coreVariables.screen_height * coreVariables.pixel_scale));
-	TexManager_LoadAll();
+	//
 }
 
-void Core_UnloadResources()
+void Core::UnloadResources()
 {
-	TexManager_UnloadAll();
-	Render_Release();
+	//
 }
 
-void Core_InputTouchBegan(float x, float y)
+void Core::InputTouchBegan(float x, float y)
 {
 	GUI_TouchBegan(x, y);
 }
 
-void Core_InputTouchMoved(float x, float y)
+void Core::InputTouchMoved(float x, float y)
 {
-    int touch_id;
-    
-    touch_id = GUI_GetTouchByLocation(x, y);
+    int touch_id = GUI_GetTouchByLocation(x, y);
     
     if (touch_id < 0)
         return;
@@ -156,11 +142,9 @@ void Core_InputTouchMoved(float x, float y)
 	GUI_TouchMoved(touch_id, x, y);
 }
 
-void Core_InputTouchEnded(float x, float y)
+void Core::InputTouchEnded(float x, float y)
 {
-    int touch_id;
-    
-    touch_id = GUI_GetTouchByLocation(x, y);
+    int touch_id = GUI_GetTouchByLocation(x, y);
     
     if (touch_id < 0)
         return;
@@ -168,7 +152,7 @@ void Core_InputTouchEnded(float x, float y)
 	GUI_TouchEnded(touch_id, x, y);
 }
 
-void Core_TouchesReset()
+void Core::TouchesReset()
 {
 	GUI_TouchesReset();
 }

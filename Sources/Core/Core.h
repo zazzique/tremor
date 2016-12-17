@@ -1,17 +1,48 @@
 
 #pragma once
 
-void Core_Init(int init_screen_width, int init_screen_height, float init_pixel_scale, U32 init_screen_size);
-void Core_Process();
-void Core_Render();
-void Core_Release();
+#include "Common.h"
+#include "Renderer.h"
 
-void Core_Pause();
+class Core
+{
+public:
+	ApplicationSettings appSettings;
 
-void Core_RestoreResources();
-void Core_UnloadResources();
+	struct Viewport
+	{
+		float width, height;
+		float center_x, center_y;
+	};
+	Viewport viewport;
 
-void Core_InputTouchBegan(float x, float y);
-void Core_InputTouchMoved(float x, float y);
-void Core_InputTouchEnded(float x, float y);
-void Core_TouchesReset();
+
+	bool debug_mode = false;
+
+private:
+
+	float delta_t = 1.0f / DESIRED_FPS;
+	float time_delta_buffer[16];
+
+public:
+	
+	Renderer* renderer = nullptr;
+
+public:
+
+	Core(const ApplicationSettings& appSettings);
+	~Core();
+
+	void Process();
+	void Render();
+
+	void Pause();
+
+	void RestoreResources();
+	void UnloadResources();
+
+	void InputTouchBegan(float x, float y);
+	void InputTouchMoved(float x, float y);
+	void InputTouchEnded(float x, float y);
+	void TouchesReset();
+};

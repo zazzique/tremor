@@ -70,6 +70,5 @@ void GUI_GetControlVector(GUIControlId control_id, Vector2D *vector);
 void GUI_GetPointInControl(GUIControlId control_id, Vector2D *vector);
 void GUI_MakeFadeWithEvent(int event_id, float in_time, float out_time);
 int GUI_ProcessEvents(int *event_id, float delta_time);
-void GUI_RenderFade();
 void GUI_Release();
 

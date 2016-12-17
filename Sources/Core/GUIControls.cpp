@@ -13,7 +13,6 @@
 #include "TextureManager.h"
 #include "Sprites.h"
 #include "Font.h"
-#include "Render.h"
 #include "GUIControls.h"
 
 #define GUI_CONTROLLER_INNER_RADIUS 40.0f
@@ -69,15 +68,9 @@ Vector2D gui_touched_start_locations[MAX_GUI_TOUCHES_SUPPORTED];
 int gui_event_id;
 int gui_event_activated;
 
-float gui_fade_time_in;
-float gui_fade_time_out;
-float gui_fade_time;
-
 int quick_touch;
 Vector2D quick_touch_location;
 float quick_touch_time;
-
-float gui_fade_vertices[8];
 
 bool gui_enable_touches_reset;
 
@@ -123,21 +116,8 @@ void GUI_Init()
 	gui_event_id = -1;
 	gui_event_activated = false;
 	
-	gui_fade_time_in = 0.0f;
-	gui_fade_time_out = 0.0f;
-	gui_fade_time = 0.0f;
-	
 	quick_touch = false;
 	quick_touch_time = 0.0f;
-	
-	gui_fade_vertices[0] = 0.0f;
-	gui_fade_vertices[1] = 0.0f;
-	gui_fade_vertices[2] = (float)coreVariables.screen_width;
-	gui_fade_vertices[3] = 0.0f;
-	gui_fade_vertices[4] = 0.0f;
-	gui_fade_vertices[5] = (float)coreVariables.screen_height;
-	gui_fade_vertices[6] = (float)coreVariables.screen_width;
-	gui_fade_vertices[7] = (float)coreVariables.screen_height;
 }
 
 void GUI_Lock()
@@ -155,16 +135,11 @@ bool GUI_IsLocked()
     return gui_lock;
 }
 
-bool GUI_IsFade()
-{
-    return (gui_fade_time > 0) ? true : false;
-}
-
 void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type, Vector2D *pos, Vector2D *size, U32 flags, SpriteHandler *sprite_1, SpriteHandler *sprite_2, const char *text, const char *font_name, Vector2D *text_pos)
 {
 	if (gui_controls_count >= MAX_GUI_CONTROLS_COUNT)
 	{
-		LogPrint("Error: too many GUI elements!\n");
+		Log::Print("Error: too many GUI elements!\n");
 		return;
 	}
 	
@@ -594,7 +569,7 @@ void GUI_TouchBegan(float x, float y)
     
 	bool is_background = true;
 	
-	if (gui_lock || (gui_fade_time > 0.0f))
+	if (gui_lock)
 		return;
     
 	for (int i = 0; i < gui_controls_count; i ++)
@@ -846,7 +821,7 @@ bool GUI_ControlIsPressed(GUIControlId control_id)
 {
 	bool result = false;
 	
-	if (gui_lock || (gui_fade_time > 0.0f))
+	if (gui_lock)
 		return false;
 	
 	if (control_id < 0 || control_id >= gui_controls_count)
@@ -875,7 +850,7 @@ bool GUI_ControlIsTouched(GUIControlId control_id) // TODO: background support
 {
 	bool result = false;
 	
-	if (gui_lock || (gui_fade_time > 0.0f))
+	if (gui_lock)
 		return false;
 	
 	if (control_id < 0 || control_id >= gui_controls_count)
@@ -1093,95 +1068,6 @@ float GUI_GetSliderValue(GUIControlId control_id)
 	
 	return gui_controls[control_id].slider_value;
 }
-
-
-void GUI_MakeFadeWithEvent(int event_id, float in_time, float out_time)
-{
-	gui_event_id = event_id;
-	gui_event_activated = false;
-	
-	gui_fade_time_in = in_time;
-	gui_fade_time_out = out_time;
-	gui_fade_time = gui_fade_time_in + gui_fade_time_out;
-}
-
-int GUI_ProcessEvents(int *event_id, float delta_time)
-{
-	static int gui_prev_active_group = -1;
-	
-	if (gui_prev_active_group != gui_active_group)
-	{
-		for (int i = 0; i < gui_controls_count; i++)
-		{
-			gui_controls[i].touch_began = false;
-			gui_controls[i].touch_done = false;
-			
-			quick_touch_time = 1000.0f;
-			quick_touch = false;
-		}
-		
-		gui_prev_active_group = gui_active_group;
-	}
-	
-	quick_touch_time += delta_time;
-
-	float gui_prev_time = gui_fade_time;
-	
-	gui_fade_time -= delta_time;
-	
-	if (gui_fade_time <= gui_fade_time_out)
-	{
-		if (gui_prev_time > gui_fade_time_out)
-		{
-			gui_event_activated = true;
-		}
-	}
-	
-	if (gui_event_activated)
-	{
-		*event_id = gui_event_id;
-		
-		gui_event_activated = false;
-		
-		return true;
-	}
-	
-	return false;
-}
-
-void GUI_RenderFade()
-{
-	if (gui_fade_time > 0.0f)
-	{
-		float fade_k = 0.0f;
-		
-		if (gui_fade_time > gui_fade_time_out)
-		{
-			fade_k = 1.0f - ((gui_fade_time - gui_fade_time_out) / (gui_fade_time_in + FLT_EPSILON));
-		}
-		else
-		{
-			fade_k = gui_fade_time / (gui_fade_time_out + FLT_EPSILON);
-		}
-		
-		fade_k = MathWave(fade_k);
-		
-        Render_DisableTextures();
-        Render_EnableVertexArray();
-        Render_DisableTexCoordArray();
-        Render_DisableColorArray();
-        Render_DisableIndexArray();
-		
-        
-        Render_SetBlendFunc(TR_SRC_ALPHA, TR_ONE_MINUS_SRC_ALPHA);
-        
-        Render_SetVertexArray(&gui_fade_vertices[0], 2, TR_FLOAT, 0);
-        Render_SetColor(0.0f, 0.0f, 0.0f, fade_k);
-        
-        Render_DrawArrays(TR_TRIANGLE_STRIP, 4);
-	}
-}
-
 
 void GUI_Release()
 {

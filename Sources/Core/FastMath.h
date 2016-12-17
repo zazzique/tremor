@@ -8,45 +8,6 @@
 
 #define pi 3.1415926536f
 
-extern float sin_table[8192];
-extern float cos_table[8192];
-
-void FastMath_Init();
-
-void InitFastSinCosTable();
-
-inline float FastSin(float a)
-{
-	while (a < 0.0f)
-		a += 2.0f * pi;
-    while (a > 2.0f * pi)
-		a -= 2.0f * pi;
-
-	return sin_table[(int)(a * 4096.0f * (1.0f / (2.0f * pi))) & 4095];
-}
-
-inline float FastCos(float a)
-{
-	while (a < 0.0f)
-		a += 2.0f * pi;
-    while (a > 2.0f * pi)
-		a -= 2.0f * pi;
-
-	return cos_table[(int)(a * 4096.0f * (1.0f / (2.0f * pi))) & 4095];
-}
-
-inline void FastSinCos(float a, float *sin_r, float *cos_r)
-{
-	while (a < 0.0f)
-		a += 2.0f * pi;
-    while (a > 2.0f * pi)
-		a -= 2.0f * pi;
-	
-	register int table_index = (int)(a * 4096.0f * (1.0f / (2.0f * pi))) & 4095;
-	*sin_r = sin_table[table_index];
-	*cos_r = cos_table[table_index];
-}
-
 inline int FastTrunc(float f)
 {
 	f -= 0.5f;

@@ -5,16 +5,10 @@
 #include "Vector.h"
 #include "Core.h"
 #include "CoreDefines.h"
-#include "CoreVariables.h"
-#include "Sprites.h"
-#include "GUIControls.h"
 #include "Game.h"
 #include "main.h"
 
 #define TC_USE_CONSOLE
-
-HGLRC           hRC = nullptr;
-HDC             hDC = nullptr;
 
 float input_x = 0.0f;
 float input_y = 0.0f;
@@ -23,94 +17,14 @@ bool  input_button_down = false;
 const int V_SX = 1024;
 const int V_SY = 600;
 const float PIXEL_SCALE = 1.0f;
-const int SCREEN_SIZE = SCREEN_SIZE_NORMAL;
 
-bool OpenGL_Init(HWND hWnd)
-{
-	GLuint		PixelFormat;
 
-	static PIXELFORMATDESCRIPTOR pfd =
-	{
-		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
-		1,								// Version Number
-		PFD_DRAW_TO_WINDOW |			// Format Must Support Window
-		PFD_SUPPORT_OPENGL |			// Format Must Support OpenGL
-		PFD_DOUBLEBUFFER,				// Must Support Double Buffering
-		PFD_TYPE_RGBA,					// Request An RGBA Format
-		32,								// Select Our Color Depth
-		0, 0, 0, 0, 0, 0,				// Color Bits Ignored
-		0,								// No Alpha Buffer
-		0,								// Shift Bit Ignored
-		0,								// No Accumulation Buffer
-		0, 0, 0, 0,						// Accumulation Bits Ignored
-		16,								// 16Bit Z-Buffer (Depth Buffer)
-		0,								// No Stencil Buffer
-		0,								// No Auxiliary Buffer
-		PFD_MAIN_PLANE,					// Main Drawing Layer
-		0,								// Reserved
-		0, 0, 0							// Layer Masks Ignored
-	};		
-
-	if (!(hDC = GetDC(hWnd)))
-	{
-		OpenGL_Release(hWnd);
-		MessageBox(nullptr, "Can't Create A GL Device Context.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
-		return false;
-	}		
-
-	if (!(PixelFormat = ChoosePixelFormat(hDC, &pfd)))
-	{
-		OpenGL_Release(hWnd);
-		MessageBox(nullptr, "Can't Find A Suitable PixelFormat.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
-		return false;
-	}		
-
-	if(!SetPixelFormat(hDC, PixelFormat, &pfd))
-	{
-		OpenGL_Release(hWnd);
-		MessageBox(nullptr, "Can't Set The PixelFormat.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
-		return false;
-	}		
-	
-	if (!(hRC = wglCreateContext(hDC)))
-	{
-		OpenGL_Release(hWnd);
-		MessageBox(nullptr, "Can't Create A GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
-		return false;
-	}		
-	
-	if(!wglMakeCurrent(hDC, hRC))
-	{
-		OpenGL_Release(hWnd);
-		MessageBox(nullptr, "Can't Activate The GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
-		return false;
-	}		
-	
-	return true;
-}
-
-void OpenGL_Release(HWND hWnd)
-{
-	if (hRC)
-	{		
-		if (!wglMakeCurrent(nullptr,nullptr))
-		{		
-			MessageBox(nullptr, "Release Of DC And RC Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
-		}		
-
-		if (!wglDeleteContext(hRC))
-		{		
-			MessageBox(nullptr, "Release Rendering Context Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
-		}
-
-		hRC = nullptr;
-	}		
-
-	ReleaseDC(hWnd, hDC);
-}
+Core* core = nullptr;
 
 LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	LRESULT result = 0;
+
 	static POINT cursor_pos;
 	static bool show_crosshair = true;
 	static Vector2D locked_input;
@@ -129,7 +43,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (show_crosshair)
 			{
 				ShowCursor(true);
-				Core_InputTouchEnded(locked_input.x, coreVariables.screen_height - locked_input.y);
+
+				if (core)
+					core->InputTouchEnded(locked_input.x, (V_SY * PIXEL_SCALE) - locked_input.y);
 			}
 			else
 			{
@@ -138,7 +54,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				ShowCursor(false);
 				GetCursorPos(&cursor_pos);
-				Core_InputTouchBegan(locked_input.x, coreVariables.screen_height - locked_input.y);
+				
+				if (core)
+					core->InputTouchBegan(locked_input.x, (V_SY * PIXEL_SCALE) - locked_input.y);
 			}
 			break;
 
@@ -155,7 +73,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (!input_button_down)
 			{
 				input_button_down = true;
-				Core_InputTouchBegan(input_x, coreVariables.screen_height - input_y);
+				
+				if (core)
+					core->InputTouchBegan(input_x, (V_SY * PIXEL_SCALE) - input_y);
 			}
 			break;
 
@@ -172,7 +92,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			if (input_button_down)
 			{
 				input_button_down = false;
-				Core_InputTouchEnded(input_x, coreVariables.screen_height - input_y);
+				
+				if (core)
+					core->InputTouchEnded(input_x, (V_SY * PIXEL_SCALE) - input_y);
 			}
 			break;
 
@@ -184,8 +106,9 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 				input_x /= PIXEL_SCALE;
 				input_y /= PIXEL_SCALE;
-
-				Core_InputTouchMoved(input_x, coreVariables.screen_height - input_y);
+								
+				if (core)
+					core->InputTouchMoved(input_x, (V_SY * PIXEL_SCALE) - input_y);
 			}
 
 			if (!show_crosshair)
@@ -203,7 +126,8 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				locked_input.y += y;
 				SetCursorPos(cursor_pos.x, cursor_pos.y);
 
-				Core_InputTouchMoved(locked_input.x, coreVariables.screen_height - locked_input.y);
+				if (core)
+					core->InputTouchMoved(locked_input.x, (V_SY * PIXEL_SCALE) - locked_input.y);
 			}
 			break;
 
@@ -234,9 +158,13 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			return 0;
+
+		default:
+			result = DefWindowProc( hWnd, msg, wParam, lParam );
+			break;
 	}
 
-	return DefWindowProc( hWnd, msg, wParam, lParam );
+	return result;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -276,21 +204,21 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	INT w_sy = V_SY + (window_rect.bottom - window_rect.top) - (client_rect.bottom - client_rect.top);
 	INT s_sx = GetSystemMetrics(SM_CXSCREEN);
 	INT s_sy = GetSystemMetrics(SM_CYSCREEN);
-	//if (w_sx > s_sx)
-	//	w_sx = s_sx;
-	//if (w_sx > s_sy)
-	//	w_sy = s_sy;
 	INT w_x = (s_sx - w_sx) / 2;
 	INT w_y = (s_sy - w_sy) / 2;
 	if (w_x < 0) w_x = 0;
 	if (w_y < 0) w_y = 0;
 	MoveWindow( hWnd, w_x, w_y, w_sx, w_sy, true );
 
-	OpenGL_Init(hWnd);
 
-	Core_Init(V_SX, V_SY, PIXEL_SCALE, SCREEN_SIZE);
+	Core::ApplicationSettings settings;
+	settings.screen_width = V_SX;
+	settings.screen_height = V_SY;
 
-	//gui_enable_touches_reset = false;
+	Core* core = new Core(settings);
+
+	if (core == nullptr)
+		return 0;
 
 	ShowWindow( hWnd, SW_SHOWDEFAULT );
 	UpdateWindow( hWnd );
@@ -306,17 +234,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(&msg);
 		}
 
-		Core_Process();
-
-		Core_Render();
-		SwapBuffers(hDC);
-
-		Sleep(15);
+		core->Process();
+		core->Render();
+		
+		Sleep(5);
 	}
 	
-	Core_Release();
-
-	OpenGL_Release(hWnd);
+	if (core != nullptr)
+		delete core;
 
 	DestroyWindow( hWnd );
 

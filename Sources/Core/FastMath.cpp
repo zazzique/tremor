@@ -9,14 +9,6 @@
 #include "Common.h"
 #include "FastMath.h"
 
-float sin_table[8192];
-float cos_table[8192];
-
-void FastMath_Init()
-{
-	InitFastSinCosTable();
-}
-
 float AngleDifference(float a, float b)
 {
 	a -= b;
@@ -25,15 +17,6 @@ float AngleDifference(float a, float b)
 	if (a > pi)
 		a = 2.0f * pi - a;
 	return a;
-}
-
-void InitFastSinCosTable()
-{
-	for (int t = 0; t < 8192; t++)
-	{
-		sin_table[t] = sinf(t * (2.0f * pi) / 4096.0f);
-		cos_table[t] = cosf(t * (2.0f * pi) / 4096.0f);
-	}
 }
 
 void DeltaFunc(float *a, float b, float d)

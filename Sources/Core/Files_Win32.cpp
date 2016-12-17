@@ -8,7 +8,7 @@
 
 #define MAX_FILES 8192
 
-char file_pathes[MAX_FILES][256];
+char file_pathes[MAX_FILES][256]; // TODO: use strings
 char file_names[MAX_FILES][64];
 int files_count = 0;
 
@@ -33,7 +33,7 @@ int AddFileToList(char *path, char *name)
 
 	if (files_count >= MAX_FILES - 1)
 	{
-		LogPrint("Error! Too many files");
+		Log::Print("Error! Too many files");
 		return -1;
 	}
 

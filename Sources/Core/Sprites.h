@@ -1,5 +1,5 @@
 
-#pragma once
+#pragma once // TODO: use new sprites
 
 #define SPRITE_CENTERED 0x00000000
 #define SPRITE_ALIGN_LEFT 0x00000001
