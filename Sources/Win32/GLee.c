@@ -67,7 +67,7 @@ void * __GLeeGetProcAddress(const char *extname)
     void *function;
 
     bundle = CFBundleCreate(kCFAllocatorDefault, bundleURL);
-    assert(bundle != NULL);
+    assert(bundle != nullptr);
 
     function = CFBundleGetFunctionPointerForName(bundle, functionName);
 

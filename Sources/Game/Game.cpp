@@ -5,7 +5,6 @@
 #include "FastMath.h"
 #include "Vector.h"
 #include "Timer.h"
-#include "Parser.h"
 #include "Files.h"
 #include "Locale.h"
 #include "TextureManager.h"

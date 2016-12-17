@@ -354,7 +354,7 @@ bool Vector2D_LineIntersection(Vector2D *a1, Vector2D *a2, Vector2D *b1, Vector2
 
 		if (v >= 0.0f && v <= 1.0f)
 		{
-			if (result != NULL)
+			if (result != nullptr)
 			{
 				result->x = a1->x + (v * v1.x);
 				result->y = a1->y + (v * v1.y);

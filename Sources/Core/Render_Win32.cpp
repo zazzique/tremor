@@ -3,54 +3,36 @@
 
 #include <windows.h>
 #include "glee.h"
-#include "glues_project.h"
 
 #include "Common.h"
 #include "FastMath.h"
 #include "Vector.h"
 #include "Render.h"
 
-bool force_mode = false;
 
-bool textures_enabled = false;
-bool blend_enabled = false;
-bool depth_mask_enabled = false;
-bool depth_test_enabled = false;
-bool alpha_test_enabled = false;
-bool vertex_array_enabled = false;
-bool color_array_enabled = false;
-bool tc_array_enabled = false;
-bool index_array_enabled = false;
-
-void *index_array = NULL;
-int index_array_gl_type;
-
-int r_sx, r_sy;
-
-
-int Render_GetGLType(enum TRVariableType type)
+int RenderGL10_GetGLType(Render::VariableType type)
 {
 	int result = GL_FLOAT;
 
 	switch (type)
 	{
-		case TR_UNSIGNED_BYTE:
+		case Render::VariableType::UNSIGNED_BYTE:
             result = GL_UNSIGNED_BYTE;
             break;
 
-		case TR_BYTE:
+		case Render::VariableType::BYTE:
             result = GL_BYTE;
             break;
 
-		case TR_UNSIGNED_SHORT:
+		case Render::VariableType::UNSIGNED_SHORT:
             result = GL_UNSIGNED_SHORT;
             break;
 
-		case TR_SHORT:
+		case Render::VariableType::SHORT:
             result = GL_SHORT;
             break;
 
-		case TR_FLOAT:
+		case Render::VariableType::FLOAT:
             result = GL_FLOAT;
             break;
 	}
@@ -58,37 +40,37 @@ int Render_GetGLType(enum TRVariableType type)
 	return result;
 }
 
-int Render_GetGLPrimitiveType(enum TRPrimitiveType type)
+int RenderGL10_GetGLPrimitiveType(Render::PrimitiveType type)
 {
 	int result = GL_POINTS;
 
 	switch (type)
 	{
-		case TR_POINTS:
+		case Render::PrimitiveType::POINTS:
             result = GL_POINTS;
             break;
 
-		case TR_LINES:
+		case Render::PrimitiveType::LINES:
             result = GL_LINES;
             break;
 
-		case TR_LINE_LOOP:
+		case Render::PrimitiveType::LINE_LOOP:
             result = GL_LINE_LOOP;
             break;
 
-		case TR_LINE_STRIP:
+		case Render::PrimitiveType::LINE_STRIP:
             result = GL_LINE_STRIP;
             break;
 
-		case TR_TRIANGLES:
+		case Render::PrimitiveType::TRIANGLES:
             result = GL_TRIANGLES;
             break;
 
-		case TR_TRIANGLE_STRIP:
+		case Render::PrimitiveType::TRIANGLE_STRIP:
             result = GL_TRIANGLE_STRIP;
             break;
 
-		case TR_TRIANGLE_FAN:
+		case Render::PrimitiveType::TRIANGLE_FAN:
             result = GL_TRIANGLE_FAN;
             break;
 	}
@@ -96,41 +78,41 @@ int Render_GetGLPrimitiveType(enum TRPrimitiveType type)
 	return result;
 }
 
-int Render_GetGLBlendType(enum TRBlendType type)
+int RenderGL10_GetGLBlendType(Render::BlendType type)
 {
 	int result = GL_ZERO;
     
 	switch (type)
 	{
-		case TR_ZERO:
+		case Render::BlendType::ZERO:
             result = GL_ZERO;
             break;
             
-        case TR_ONE:
+        case Render::BlendType::ONE:
             result = GL_ONE;
             break;
             
-        case TR_SRC_COLOR:
+        case Render::BlendType::SRC_COLOR:
             result = GL_SRC_COLOR;
             break;
 
-		case TR_ONE_MINUS_SRC_COLOR:
+		case Render::BlendType::ONE_MINUS_SRC_COLOR:
             result = GL_ONE_MINUS_SRC_COLOR;
             break;
 
-		case TR_ONE_MINUS_DST_COLOR:
+		case Render::BlendType::ONE_MINUS_DST_COLOR:
             result = GL_ONE_MINUS_DST_COLOR;
             break;
             
-        case TR_SRC_ALPHA:
+        case Render::BlendType::SRC_ALPHA:
             result = GL_SRC_ALPHA;
             break;
             
-        case TR_ONE_MINUS_SRC_ALPHA:
+        case Render::BlendType::ONE_MINUS_SRC_ALPHA:
             result = GL_ONE_MINUS_SRC_ALPHA;
             break;
             
-        case TR_DST_COLOR:
+        case Render::BlendType::DST_COLOR:
             result = GL_DST_COLOR;
             break;
 	}
@@ -139,43 +121,43 @@ int Render_GetGLBlendType(enum TRBlendType type)
 }
 
 
-bool Render_Init(I32 width, I32 height)
+bool Render::Init(I32 width, I32 height)
 {
-	r_sx = width;
-	r_sy = height;
+	viewport_width = width;
+	viewport_height = height;
     
     force_mode = true;
 
-	glViewport(0, 0, r_sx, r_sy);
+	glViewport(0, 0, viewport_width, viewport_height);
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    Render_EnableDepthMask();
+    Render::EnableDepthMask();
 	glDepthFunc(GL_LEQUAL);
-	Render_EnableDepthTest();
+	Render::EnableDepthTest();
 	glEnable(GL_CULL_FACE);
-	Render_SetBlendFunc(TR_SRC_ALPHA, TR_ONE_MINUS_SRC_ALPHA);
-	Render_DisableBlend();
+	Render::SetBlendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
+	Render::DisableBlend();
     glAlphaFunc(GL_GREATER, 0.0f);
-    Render_DisableAlphaTest();
+    Render::DisableAlphaTest();
 
-	Render_EnableVertexArray();
-    Render_EnableColorArray();
-    Render_EnableTexCoordArray();
-    Render_DisableIndexArray();
+	Render::EnableVertexArray();
+    Render::EnableColorArray();
+    Render::EnableTexCoordArray();
+    Render::DisableIndexArray();
 
-    Render_EnableTextures();
+    Render::EnableTextures();
 
 	force_mode = false;
 
 	return true;
 }
 
-void Render_CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest)
+void Render::CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest)
 {
-    Render_EnableTextures();
+    Render::EnableTextures();
     
 	GLint pixel_format;
 	if (bpp == 8)
@@ -209,18 +191,18 @@ void Render_CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 he
 	glGetError();
 }
 
-void Render_BindTexture(U32 texture_id)
+void Render::BindTexture(U32 texture_id)
 {
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 
-void Render_DeleteTexture(U32 *texture_id_ptr)
+void Render::DeleteTexture(U32 *texture_id_ptr)
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDeleteTextures(1, (GLuint *)texture_id_ptr);
 }
 
-void Render_ActiveTextureLayer(int layer)
+void Render::SetActiveTextureLayer(int layer)
 {
     if (layer < 0 || layer > 7)
         return;
@@ -281,25 +263,25 @@ void Render_ActiveTextureLayer(int layer)
     }
 }
 
-void Render_Clear(float r, float g, float b, float a)
+void Render::Clear(float r, float g, float b, float a)
 {
     glClearColor(r, g, b, a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Render_SetMatrixMode(enum TRMatrixMode matrix_mode)
+void Render::SetMatrixMode(enum TRMatrixMode matrix_mode)
 {
 	GLenum gl_matrix_mode = GL_MODELVIEW;
 
 	switch (matrix_mode)
 	{
-		case TR_PROJECTION:
+		case PROJECTION:
 			gl_matrix_mode = GL_PROJECTION;
 			break;
-		case TR_MODEL:
+		case MODEL:
 			gl_matrix_mode = GL_MODELVIEW;
 			break;
-		case TR_TEXTURE:
+		case TEXTURE:
 			gl_matrix_mode = GL_TEXTURE;
 			break;
 	}
@@ -307,29 +289,29 @@ void Render_SetMatrixMode(enum TRMatrixMode matrix_mode)
 	glMatrixMode(gl_matrix_mode);
 }
 
-void Render_ResetMatrix()
+void Render::ResetMatrix()
 {
 	glLoadIdentity();
 }
 
-void Render_SetMatrix(const float *m)
+void Render::SetMatrix(const float *m)
 {
 	glLoadMatrixf(m);
 }
 
-void Render_GetMatrix(enum TRMatrixMode matrix_mode, float *m)
+void Render::GetMatrix(enum TRMatrixMode matrix_mode, float *m)
 {
 	GLenum gl_matrix_mode = GL_MODELVIEW_MATRIX;
 
 	switch (matrix_mode)
 	{
-		case TR_PROJECTION:
+		case PROJECTION:
 			gl_matrix_mode = GL_PROJECTION_MATRIX;
 			break;
-		case TR_MODEL:
+		case MODEL:
 			gl_matrix_mode = GL_MODELVIEW_MATRIX;
 			break;
-		case TR_TEXTURE:
+		case TEXTURE:
 			gl_matrix_mode = GL_TEXTURE_MATRIX;
 			break;
 	}
@@ -337,44 +319,44 @@ void Render_GetMatrix(enum TRMatrixMode matrix_mode, float *m)
 	glGetFloatv(gl_matrix_mode, m);
 }
 
-void Render_MatrixTranslate(float x, float y, float z)
+void Render::MatrixTranslate(float x, float y, float z)
 {
 	glTranslatef(x, y, z);
 }
 
-void Render_MatrixRotate(float angle, float x, float y, float z)
+void Render::MatrixRotate(float angle, float x, float y, float z)
 {
 	glRotatef(angle, x, y, z);
 }
 
-void Render_MatrixScale(float x, float y, float z)
+void Render::MatrixScale(float x, float y, float z)
 {
 	glScalef(x, y, z);
 }
 
-void Render_PushMatrix()
+void Render::PushMatrix()
 {
 	glPushMatrix();
 }
 
-void Render_PopMatrix()
+void Render::PopMatrix()
 {
 	glPopMatrix();
 }
 
-void Render_SetProjectionOrtho()
+void Render::SetProjectionOrtho()
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
 	float scale = 0.5f / coreVariables.pixel_scale;
     
-	glOrtho(-r_sx * scale, r_sx * scale, -r_sy * scale, r_sy * scale, -2048.0f, 2048.0f);
+	glOrtho(-viewport_width * scale, viewport_width * scale, -viewport_height * scale, viewport_height * scale, -2048.0f, 2048.0f);
     
-	glTranslatef(-r_sx * scale, -r_sy * scale, 0.0f);
+	glTranslatef(-viewport_width * scale, -viewport_height * scale, 0.0f);
 }
 
-void Render_SetProjectionFrustum(float z_near, float z_far, float fov_x, float fov_y)
+void Render::SetProjectionFrustum(float z_near, float z_far, float fov_x, float fov_y) // TODO: is it works
 {
     GLfloat size_x, size_y;
     size_y = z_near * tanf(DEG2RAD(fov_y) * 0.5f);
@@ -386,47 +368,27 @@ void Render_SetProjectionFrustum(float z_near, float z_far, float fov_x, float f
     glFrustum(-size_x, size_x, -size_y, size_y, z_near, z_far);
 }
 
-Vector3D Render_ScreenPointToWorldVector(float x, float y, float z, const float *model_matrix, const float *projection_matrix)
-{
-	Vector3D result = { 0, 0, 0 };
-	GLint viewport[4] = { 0, 0, coreVariables.screen_width, coreVariables.screen_height };
-
-	gluUnProject(x, y, z, model_matrix, projection_matrix, viewport, &result.x, &result.y, &result.z);
-	
-	return result;
-}
-
-Vector3D Render_WorldVectorToScreenPoint(float x, float y, float z, const float *model_matrix, const float *projection_matrix)
-{
-	Vector3D result = { 0, 0, 0 };
-	GLint viewport[4] = { 0, 0, coreVariables.screen_width, coreVariables.screen_height };
-
-	gluProject(x, y, z, model_matrix, projection_matrix, viewport, &result.x, &result.y, &result.z);
-	
-	return result;
-}
-
-void Render_SetColor(float r, float g, float b, float a)
+void Render::SetColor(float r, float g, float b, float a)
 {
 	glColor4f(r, g, b, a);
 }
 
-void Render_SetBlendFunc(enum TRBlendType sfactor, enum TRBlendType dfactor)
+void Render::SetBlendFunc(BlendType sfactor, BlendType dfactor)
 {
-    glBlendFunc(Render_GetGLBlendType(sfactor), Render_GetGLBlendType(dfactor));
+    glBlendFunc(RenderGL10_GetGLBlendType(sfactor), RenderGL10_GetGLBlendType(dfactor));
 }
 
-void Render_EnableFaceCulling()
+void Render::EnableFaceCulling()
 {
 	glEnable(GL_CULL_FACE);
 }
 
-void Render_DisableFaceCulling()
+void Render::DisableFaceCulling()
 {
 	glDisable(GL_CULL_FACE);
 }
 
-void Render_EnableTextures()
+void Render::EnableTextures()
 {
 	if (!textures_enabled || force_mode)
 	{
@@ -435,7 +397,7 @@ void Render_EnableTextures()
 	}
 }
 
-void Render_DisableTextures()
+void Render::DisableTextures()
 {
 	if (textures_enabled || force_mode)
 	{
@@ -444,7 +406,7 @@ void Render_DisableTextures()
 	}
 }
 
-void Render_EnableBlend()
+void Render::EnableBlend()
 {
 	if (!blend_enabled || force_mode)
 	{
@@ -453,7 +415,7 @@ void Render_EnableBlend()
 	}
 }
 
-void Render_DisableBlend()
+void Render::DisableBlend()
 {
 	if (blend_enabled || force_mode)
 	{
@@ -462,7 +424,7 @@ void Render_DisableBlend()
 	}
 }
 
-void Render_EnableDepthMask()
+void Render::EnableDepthMask()
 {
 	if (!depth_mask_enabled || force_mode)
 	{
@@ -471,7 +433,7 @@ void Render_EnableDepthMask()
 	}
 }
 
-void Render_DisableDepthMask()
+void Render::DisableDepthMask()
 {
 	if (depth_mask_enabled || force_mode)
 	{
@@ -480,7 +442,7 @@ void Render_DisableDepthMask()
 	}
 }
 
-void Render_EnableDepthTest()
+void Render::EnableDepthTest()
 {
 	if (!depth_test_enabled || force_mode)
 	{
@@ -489,7 +451,7 @@ void Render_EnableDepthTest()
 	}
 }
 
-void Render_DisableDepthTest()
+void Render::DisableDepthTest()
 {
 	if (depth_test_enabled || force_mode)
 	{
@@ -498,7 +460,7 @@ void Render_DisableDepthTest()
 	}
 }
 
-void Render_EnableAlphaTest()
+void Render::EnableAlphaTest()
 {
 	if (!alpha_test_enabled || force_mode)
 	{
@@ -507,7 +469,7 @@ void Render_EnableAlphaTest()
 	}
 }
 
-void Render_DisableAlphaTest()
+void Render::DisableAlphaTest()
 {
 	if (alpha_test_enabled || force_mode)
 	{
@@ -516,7 +478,7 @@ void Render_DisableAlphaTest()
 	}
 }
 
-void Render_EnableVertexArray()
+void Render::EnableVertexArray()
 {
 	if (!vertex_array_enabled || force_mode)
 	{
@@ -525,7 +487,7 @@ void Render_EnableVertexArray()
 	}
 }
 
-void Render_DisableVertexArray()
+void Render::DisableVertexArray()
 {
 	if (vertex_array_enabled || force_mode)
 	{
@@ -534,7 +496,7 @@ void Render_DisableVertexArray()
 	}
 }
 
-void Render_EnableColorArray()
+void Render::EnableColorArray()
 {
 	if (!color_array_enabled || force_mode)
 	{
@@ -543,7 +505,7 @@ void Render_EnableColorArray()
 	}
 }
 
-void Render_DisableColorArray()
+void Render::DisableColorArray()
 {
 	if (color_array_enabled || force_mode)
 	{
@@ -552,7 +514,7 @@ void Render_DisableColorArray()
 	}
 }
 
-void Render_EnableTexCoordArray()
+void Render::EnableTexCoordArray()
 {
 	if (!tc_array_enabled || force_mode)
 	{
@@ -561,7 +523,7 @@ void Render_EnableTexCoordArray()
 	}
 }
 
-void Render_DisableTexCoordArray()
+void Render::DisableTexCoordArray()
 {
 	if (tc_array_enabled || force_mode)
 	{
@@ -570,52 +532,52 @@ void Render_DisableTexCoordArray()
 	}
 }
 
-void Render_EnableIndexArray()
+void Render::EnableIndexArray()
 {
 	index_array_enabled = true;
 }
 
-void Render_DisableIndexArray()
+void Render::DisableIndexArray()
 {
 	index_array_enabled = false;
 }
 
-void Render_SetVertexArray(void *pointer, int size, enum TRVariableType type, int stride)
+void Render::SetVertexArray(void *pointer, int size, VariableType type, int stride)
 {
-	glVertexPointer(size, Render_GetGLType(type), stride, pointer);
+	glVertexPointer(size, RenderGL10_GetGLType(type), stride, pointer);
 }
 
-void Render_SetColorArray(void *pointer, int size, enum TRVariableType type, int stride)
+void Render::SetColorArray(void *pointer, int size, VariableType type, int stride)
 {
-	glColorPointer(size, Render_GetGLType(type), stride, pointer);
+	glColorPointer(size, RenderGL10_GetGLType(type), stride, pointer);
 }
 
-void Render_SetTexCoordArray(void *pointer, int size, enum TRVariableType type, int stride)
+void Render::SetTexCoordArray(void *pointer, int size, VariableType type, int stride)
 {
-	glTexCoordPointer(size, Render_GetGLType(type), stride, pointer);
+	glTexCoordPointer(size, RenderGL10_GetGLType(type), stride, pointer);
 }
 
-void Render_SetIndexArray(void *pointer, enum TRVariableType type)
+void Render::SetIndexArray(void *pointer, VariableType type)
 {
 	index_array = pointer;
-	index_array_gl_type = Render_GetGLType(type);
+	index_array_gl_type = RenderGL10_GetGLType(type);
 }
 
-void Render_DrawArrays(enum TRPrimitiveType primitive_type, int vertex_count)
+void Render::DrawArrays(PrimitiveType primitive_type, int vertex_count)
 {
 	int e = glGetError();
 	if (index_array_enabled)
 	{
-		glDrawElements(Render_GetGLPrimitiveType(primitive_type), vertex_count, index_array_gl_type, index_array);
+		glDrawElements(RenderGL10_GetGLPrimitiveType(primitive_type), vertex_count, index_array_gl_type, index_array);
 	}
 	else
 	{
-		glDrawArrays(Render_GetGLPrimitiveType(primitive_type), 0, vertex_count);
+		glDrawArrays(RenderGL10_GetGLPrimitiveType(primitive_type), 0, vertex_count);
 	}
 	e = glGetError();
 }
 
-void Render_Release()
+void Render::Release()
 {
     //
 }

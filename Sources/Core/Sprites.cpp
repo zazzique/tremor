@@ -68,7 +68,7 @@ void Sprites_Init()
 
 void Sprites_AddSprite(SpriteHandler *sprite_handler, char *texture, float tc_x, float tc_y, float tc_width, float tc_height, float scale)
 {
-	if (sprite_handler == NULL)
+	if (sprite_handler == nullptr)
 		return;
 	
 	int current_sprite_group = -1;
@@ -104,7 +104,7 @@ void Sprites_AddSprite(SpriteHandler *sprite_handler, char *texture, float tc_x,
 		else
 		{
 			LogPrint("Error: too many sprite groups!\n");
-			sprite_handler = NULL;
+			sprite_handler = nullptr;
 			return;
 		}
 	}
@@ -114,7 +114,7 @@ void Sprites_AddSprite(SpriteHandler *sprite_handler, char *texture, float tc_x,
 	if (current_sprite >= MAX_SPRITES_IN_GROUP)
 	{
 		LogPrint("Error: too many sprites in group!\n");
-		sprite_handler = NULL;
+		sprite_handler = nullptr;
 		return;
 	}
 	
@@ -138,7 +138,7 @@ void Sprites_AddSprite(SpriteHandler *sprite_handler, char *texture, float tc_x,
 
 void Sprites_DrawSprite(SpriteHandler *sprite_handler, float x, float y, float scale, float angle, U32 color, U32 flags)
 {
-	if (sprite_handler == NULL)
+	if (sprite_handler == nullptr)
 	{
 		LogPrint("Error: sprite not found!\n");
 		return;
@@ -278,7 +278,7 @@ void Sprites_DrawSprite(SpriteHandler *sprite_handler, float x, float y, float s
 
 void Sprites_DrawSpriteEx(SpriteHandler *sprite_handler, float x, float y, float scale_x, float scale_y, float tc_bias_x, float tc_bias_y, float tc_scale_x, float tc_scale_y, float angle, U32 color, U32 flags)
 {
-	if (sprite_handler == NULL)
+	if (sprite_handler == nullptr)
 	{
 		LogPrint("Error: sprite not found!\n");
 		return;
@@ -418,7 +418,7 @@ void Sprites_DrawSpriteEx(SpriteHandler *sprite_handler, float x, float y, float
 
 void Sprites_GetSpriteSize(SpriteHandler *sprite_handler, Vector2D *size)
 {
-	if (sprite_handler == NULL)
+	if (sprite_handler == nullptr)
 	{
 		LogPrint("Error: sprite not found!\n");
 		return;
@@ -442,7 +442,7 @@ void Sprites_GetSpriteSize(SpriteHandler *sprite_handler, Vector2D *size)
 
 void Sprites_SetSpriteSize(SpriteHandler *sprite_handler, const Vector2D *size)
 {
-	if (sprite_handler == NULL)
+	if (sprite_handler == nullptr)
 	{
 		LogPrint("Error: sprite not found!\n");
 		return;

@@ -1,99 +1,124 @@
 
 #pragma once
 
-enum TRVariableType
+class Render
 {
-	TR_UNSIGNED_BYTE,
-	TR_BYTE,
-	TR_UNSIGNED_SHORT,
-	TR_SHORT,
-	TR_FLOAT
+public:
+	enum VariableType
+	{
+		UNSIGNED_BYTE,
+		BYTE,
+		UNSIGNED_SHORT,
+		SHORT,
+		FLOAT
+	};
+
+	enum PrimitiveType
+	{
+		POINTS,
+		LINES,
+		LINE_LOOP,
+		LINE_STRIP,
+		TRIANGLES,
+		TRIANGLE_STRIP,
+		TRIANGLE_FAN
+	};
+
+	enum BlendType
+	{
+		ZERO,
+		ONE,
+		SRC_COLOR,
+		ONE_MINUS_SRC_COLOR,
+		ONE_MINUS_DST_COLOR,
+		SRC_ALPHA,
+		ONE_MINUS_SRC_ALPHA,
+		DST_COLOR
+	};
+
+	enum MatrixMode
+	{
+		PROJECTION,
+		MODEL,
+		TEXTURE
+	};
+
+private:
+	void *index_array = nullptr;
+	int index_array_gl_type;
+
+	int viewport_width, viewport_height;
+
+private:
+	bool force_mode = false;
+
+	bool textures_enabled = false;
+	bool blend_enabled = false;
+	bool depth_mask_enabled = false;
+	bool depth_test_enabled = false;
+	bool alpha_test_enabled = false;
+	bool vertex_array_enabled = false;
+	bool color_array_enabled = false;
+	bool tc_array_enabled = false;
+	bool index_array_enabled = false;
+
+	// TODO: init in constructor
+	// TODO: release in destructor
+
+public:
+	Render(int width, int height);
+
+	bool Init(I32 width, I32 height);
+	void Release();
+
+	void CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest);
+	void BindTexture(U32 texture_id);
+	void DeleteTexture(U32 *texture_id_ptr);
+
+	void SetActiveTextureLayer(int layer);
+
+	void Clear(float r, float g, float b, float a);
+
+	void SetMatrixMode(enum TRMatrixMode matrix_mode);
+	void ResetMatrix();
+	void SetMatrix(const float *m);
+	void GetMatrix(enum TRMatrixMode matrix_mode, float *m);
+	void MatrixTranslate(float x, float y, float z);
+	void MatrixRotate(float angle, float x, float y, float z);
+	void MatrixScale(float x, float y, float z);
+	void PushMatrix();
+	void PopMatrix();
+	void SetProjectionOrtho();
+	void SetProjectionFrustum(float z_near, float z_far, float fov_x, float fov_y);
+
+	void SetColor(float r, float g, float b, float a);
+	void SetBlendFunc(BlendType sfactor, BlendType dfactor);
+
+	void EnableFaceCulling();
+	void DisableFaceCulling();
+	void EnableTextures();
+	void DisableTextures();
+	void EnableBlend();
+	void DisableBlend();
+	void EnableDepthMask();
+	void DisableDepthMask();
+	void EnableDepthTest();
+	void DisableDepthTest();
+	void EnableAlphaTest();
+	void DisableAlphaTest();
+	void EnableVertexArray();
+	void DisableVertexArray();
+	void EnableColorArray();
+	void DisableColorArray();
+	void EnableTexCoordArray();
+	void DisableTexCoordArray();
+	void EnableIndexArray();
+	void DisableIndexArray();
+
+	void SetVertexArray(void *pointer, int size, VariableType type, int stride);
+	void SetColorArray(void *pointer, int size, VariableType type, int stride);
+	void SetTexCoordArray(void *pointer, int size, VariableType type, int stride);
+	void SetIndexArray(void *pointer, VariableType type);
+
+	void DrawArrays(PrimitiveType primitive_type, int vertex_count);
 };
-
-enum TRPrimitiveType
-{
-	TR_POINTS,
-	TR_LINES,
-	TR_LINE_LOOP,
-	TR_LINE_STRIP,
-	TR_TRIANGLES,
-	TR_TRIANGLE_STRIP,
-	TR_TRIANGLE_FAN
-};
-
-enum TRBlendType
-{
-    TR_ZERO,
-    TR_ONE,
-    TR_SRC_COLOR,
-	TR_ONE_MINUS_SRC_COLOR,
-	TR_ONE_MINUS_DST_COLOR,
-    TR_SRC_ALPHA,
-    TR_ONE_MINUS_SRC_ALPHA,
-    TR_DST_COLOR
-};
-
-enum TRMatrixMode
-{
-	TR_PROJECTION,
-	TR_MODEL,
-	TR_TEXTURE
-};
-
-bool Render_Init(I32 width, I32 height);
-void Render_Release();
-
-void Render_CreateTexture(U32 *texture_id_ptr, U8 *image_data, I32 width, I32 height, I32 bpp, bool compressed, I32 compressed_size, bool clamped, bool nearest);
-void Render_BindTexture(U32 texture_id);
-void Render_DeleteTexture(U32 *texture_id_ptr);
-
-void Render_ActiveTextureLayer(int layer);
-
-void Render_Clear(float r, float g, float b, float a);
-
-void Render_SetMatrixMode(enum TRMatrixMode matrix_mode);
-void Render_ResetMatrix();
-void Render_SetMatrix(const float *m);
-void Render_GetMatrix(enum TRMatrixMode matrix_mode, float *m);
-void Render_MatrixTranslate(float x, float y, float z);
-void Render_MatrixRotate(float angle, float x, float y, float z);
-void Render_MatrixScale(float x, float y, float z);
-void Render_PushMatrix();
-void Render_PopMatrix();
-void Render_SetProjectionOrtho();
-void Render_SetProjectionFrustum(float z_near, float z_far, float fov_x, float fov_y);
-
-Vector3D Render_ScreenPointToWorldVector(float x, float y, float z, const float *model_matrix, const float *projection_matrix);
-Vector3D Render_WorldVectorToScreenPoint(float x, float y, float z, const float *model_matrix, const float *projection_matrix);
-
-void Render_SetColor(float r, float g, float b, float a);
-void Render_SetBlendFunc(enum TRBlendType sfactor, enum TRBlendType dfactor);
-
-void Render_EnableFaceCulling();
-void Render_DisableFaceCulling();
-void Render_EnableTextures();
-void Render_DisableTextures();
-void Render_EnableBlend();
-void Render_DisableBlend();
-void Render_EnableDepthMask();
-void Render_DisableDepthMask();
-void Render_EnableDepthTest();
-void Render_DisableDepthTest();
-void Render_EnableAlphaTest();
-void Render_DisableAlphaTest();
-void Render_EnableVertexArray();
-void Render_DisableVertexArray();
-void Render_EnableColorArray();
-void Render_DisableColorArray();
-void Render_EnableTexCoordArray();
-void Render_DisableTexCoordArray();
-void Render_EnableIndexArray();
-void Render_DisableIndexArray();
-
-void Render_SetVertexArray(void *pointer, int size, enum TRVariableType type, int stride);
-void Render_SetColorArray(void *pointer, int size, enum TRVariableType type, int stride);
-void Render_SetTexCoordArray(void *pointer, int size, enum TRVariableType type, int stride);
-void Render_SetIndexArray(void *pointer, enum TRVariableType type);
-
-void Render_DrawArrays(enum TRPrimitiveType primitive_type, int vertex_count);
-

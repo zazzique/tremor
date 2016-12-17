@@ -130,7 +130,7 @@ int	 TexManager_AddTextureFromIndexedData(const U8* data, I32 width, I32 height,
 {
 	int index = -1;
 
-	if (data == NULL)
+	if (data == nullptr)
 		return -1;
 	
 	for (int i = 0; i < MAX_TEX_COUNT; i++)
@@ -163,7 +163,7 @@ int	 TexManager_AddTextureFromIndexedData(const U8* data, I32 width, I32 height,
 	
 	U8 *image_data = (U8 *)malloc(width * height * 4);
 
-	if (image_data == NULL)
+	if (image_data == nullptr)
 		return -1;
 
 	int current_pos = 0;
@@ -209,7 +209,7 @@ int	 TexManager_AddTextureFromIndexedData(const U8* data, I32 width, I32 height,
 		tga_header.descriptor = 0x20;
 
 		FILE *rsc_fp = fopen("WALLS_1x_chasm.tga", "wb" );
-		if (rsc_fp != NULL)
+		if (rsc_fp != nullptr)
 		{
 			fwrite(&tga_header.identsize, 1, 1, rsc_fp);
 			fwrite(&tga_header.colourmaptype, 1, 1, rsc_fp);
@@ -310,7 +310,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		{
 			U8 *image_data = (U8 *)malloc(header.width * header.height);
 
-			if (image_data == NULL)
+			if (image_data == nullptr)
 			{
 				LogPrint("Error: couldn't allocate memory!\n");
 				Files_CloseFile(&tex_file);
@@ -339,7 +339,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		{
 			U8 *image_data = (U8 *)malloc(header.width * header.height * 3);
 
-			if (image_data == NULL)
+			if (image_data == nullptr)
 			{
 				LogPrint("Error: couldn't allocate memory!\n");
 				Files_CloseFile(&tex_file);
@@ -371,7 +371,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		{
 			U8 *image_data = (U8 *)malloc(header.width * header.height * 4);
 
-			if (image_data == NULL)
+			if (image_data == nullptr)
 			{
 				LogPrint("Error: couldn't allocate memory!\n");
 				Files_CloseFile(&tex_file);
@@ -429,10 +429,10 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		Files_Skip(&tex_file, sizeof(U16));
 		Files_Skip(&tex_file, sizeof(U16));
 
-		U8 *image_data = NULL;
-		Files_GetData(&tex_file, (void **)&image_data, NULL);
+		U8 *image_data = nullptr;
+		Files_GetData(&tex_file, (void **)&image_data, nullptr);
 
-		if (image_data == NULL)
+		if (image_data == nullptr)
 		{
 			LogPrint("Error: couldn't get texture data!\n");
 			Files_CloseFile(&tex_file);
@@ -462,7 +462,7 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 
 		U8 *image_data = (U8 *)malloc(width * height * 4);
 
-		if (image_data == NULL)
+		if (image_data == nullptr)
 		{
 			LogPrint("Error: couldn't allocate memory!\n");
 			Files_CloseFile(&tex_file);
@@ -503,10 +503,10 @@ bool TexManager_LoadTexture(int index, char *filename, bool clamped, bool neares
 		Files_Read(&tex_file, &height, sizeof(U16));
 		Files_Read(&tex_file, &bits, sizeof(U8));
 
-		U8 *image_data = NULL;
-		Files_GetData(&tex_file, (void **)&image_data, NULL);
+		U8 *image_data = nullptr;
+		Files_GetData(&tex_file, (void **)&image_data, nullptr);
 
-		if (image_data == NULL)
+		if (image_data == nullptr)
 		{
 			LogPrint("Error: couldn't get texture data!\n");
 			Files_CloseFile(&tex_file);

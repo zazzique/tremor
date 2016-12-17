@@ -118,7 +118,7 @@ bool Files_OpenFile(FileHandler *file, const char *name)
 {
 	const char *type = strrchr(name,'.');
 	
-	if (type == NULL)
+	if (type == nullptr)
 		return false;
 	
 	char base[128];
@@ -134,7 +134,7 @@ bool Files_OpenFileAltType(FileHandler *file, const char *name, const char *type
 {
 	const char *main_type = strrchr(name,'.');
 	
-	if (main_type == NULL)
+	if (main_type == nullptr)
 		return false;
 	
 	char base[128];
@@ -165,7 +165,7 @@ bool Files_OpenFileOfType(FileHandler *file, const char *name, const char *type)
     FILE *fp;
     
 	fp = fopen(file_pathes[index], "rb");
-	if (fp == NULL)
+	if (fp == nullptr)
 		return false;
     
 	fseek(fp, 0, SEEK_END);
@@ -177,14 +177,14 @@ bool Files_OpenFileOfType(FileHandler *file, const char *name, const char *type)
     
 	file->data = (U8 *)malloc(file->size * sizeof(U8));
     
-	if (file->data == NULL)
+	if (file->data == nullptr)
 		return false;
 
 	int result = fread(file->data, sizeof(U8), file->size, fp);
 	if (file->size != result)
 	{
 		free(file->data);
-        file->data = NULL;
+        file->data = nullptr;
 		return false;
 	}
 	
@@ -200,13 +200,13 @@ bool Files_OpenFileOfType(FileHandler *file, const char *name, const char *type)
 
 bool Files_GetData(FileHandler *file, void **data, I32 *size)
 {
-	if (file->data == NULL)
+	if (file->data == nullptr)
 		return false;
 
-	if (data != NULL)
+	if (data != nullptr)
 		*data = file->data;
 
-	if (size != NULL)
+	if (size != nullptr)
 		*size = file->size;
 
 	return true;
@@ -214,7 +214,7 @@ bool Files_GetData(FileHandler *file, void **data, I32 *size)
 
 I32 Files_GetSize(FileHandler *file)
 {
-	if (file->data == NULL)
+	if (file->data == nullptr)
 		return -1;
 	
 	return file->size;
@@ -222,7 +222,7 @@ I32 Files_GetSize(FileHandler *file)
 
 I32 Files_GetCurrentPos(FileHandler *file)
 {
-	if (file->data == NULL)
+	if (file->data == nullptr)
 		return -1;
 	
 	return file->current_pos;
@@ -260,7 +260,7 @@ bool Files_ReadCompressed(FileHandler *file, void *data)
 	
 	U8 *out = (U8*)data;
 	
-	if (file->data == NULL)
+	if (file->data == nullptr)
 		return false;
 	
 	memcpy(&size, file->data + file->current_pos, sizeof(I32));
@@ -310,10 +310,10 @@ void Files_SetPos(FileHandler *file, int pos)
 
 void Files_CloseFile(FileHandler *file)
 {
-    if (file->data != NULL)
+    if (file->data != nullptr)
     {
         free(file->data);
-        file->data = NULL;
+        file->data = nullptr;
     }
 }
 

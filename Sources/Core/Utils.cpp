@@ -98,5 +98,15 @@ void HSV2RGB(float *color_rgb, float *color_hsv)
 	}
 }
 
+int strcicmp(char const* a, char const* b)
+{
+    for (;; a++, b++)
+	{
+        int d = tolower(*a) - tolower(*b);
+        if (d != 0 || !*a)
+            return d;
+    }
+}
+
 
 

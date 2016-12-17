@@ -176,7 +176,7 @@ void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type
 	
 	gui_controls[gui_controls_count].type = type;
 	
-	if (pos != NULL)
+	if (pos != nullptr)
 	{
 		gui_controls[gui_controls_count].x = pos->x;
 		gui_controls[gui_controls_count].y = pos->y;
@@ -190,7 +190,7 @@ void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type
 	gui_controls[gui_controls_count].x2 = 0.0f;
 	gui_controls[gui_controls_count].y2 = 0.0f;
 	
-	if (size != NULL)
+	if (size != nullptr)
 	{
 		gui_controls[gui_controls_count].width = size->x;
 		gui_controls[gui_controls_count].height = size->y;
@@ -205,7 +205,7 @@ void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type
 		gui_controls[gui_controls_count].dynamic_size = true;
 	}
 	
-	if (text_pos != NULL)
+	if (text_pos != nullptr)
 	{
 		gui_controls[gui_controls_count].text_pos_x = text_pos->x;
 		gui_controls[gui_controls_count].text_pos_y = text_pos->y;
@@ -224,7 +224,7 @@ void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type
 	
 	gui_controls[gui_controls_count].font_scale = 1.0f;
 	
-	if (sprite_1 == NULL)
+	if (sprite_1 == nullptr)
 	{
 		gui_controls[gui_controls_count].use_sprites = false;
 	}
@@ -235,7 +235,7 @@ void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type
 		gui_controls[gui_controls_count].sprite_1.sprite_id = sprite_1->sprite_id;
 		gui_controls[gui_controls_count].sprite_1.group_id = sprite_1->group_id;
 		
-		if (sprite_2 == NULL)
+		if (sprite_2 == nullptr)
 		{
 			gui_controls[gui_controls_count].sprite_2.sprite_id = sprite_1->sprite_id;
 			gui_controls[gui_controls_count].sprite_2.group_id = sprite_1->group_id;
@@ -247,7 +247,7 @@ void GUI_AddControl(GUIControlId *control_id, int group, U32 subgroups, int type
 		}
 	}
 	
-	if (font_name == NULL)
+	if (font_name == nullptr)
 	{
 		gui_controls[gui_controls_count].use_text = false;
 	}
@@ -335,7 +335,7 @@ void GUI_SetControlText(GUIControlId control_id, char *text)
 	if (control_id < 0 || control_id >= gui_controls_count)
 		return;
 	
-	if (text != NULL)
+	if (text != nullptr)
 		strcpy(gui_controls[control_id].text, text);
 	
 	if (!gui_controls[control_id].use_sprites && gui_controls[control_id].use_text)
@@ -377,13 +377,13 @@ void GUI_SetControlSprites(GUIControlId control_id, SpriteHandler *sprite_1, Spr
 	if (control_id < 0 || control_id >= gui_controls_count)
 		return;
 	
-	if (sprite_1 == NULL)
+	if (sprite_1 == nullptr)
 		return;
 	
 	gui_controls[control_id].sprite_1.sprite_id = sprite_1->sprite_id;
 	gui_controls[control_id].sprite_1.group_id = sprite_1->group_id;
 	
-	if (sprite_2 == NULL)
+	if (sprite_2 == nullptr)
 	{
 		gui_controls[control_id].sprite_2.sprite_id = sprite_1->sprite_id;
 		gui_controls[control_id].sprite_2.group_id = sprite_1->group_id;
@@ -774,7 +774,7 @@ void GUI_GetBackgroundMovements(float *x, float *y)
 
 bool GUI_GetQuickTouch(Vector2D *location)
 {
-	if (quick_touch && location != NULL)
+	if (quick_touch && location != nullptr)
 	{
 		*location = quick_touch_location;
 	}

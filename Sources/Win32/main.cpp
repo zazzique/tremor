@@ -2,8 +2,6 @@
 #include <windows.h>
 #include "glee.h"
 #include "Common.h"
-#include "GameDefines.h"
-#include "GameConfig.h"
 #include "Vector.h"
 #include "Core.h"
 #include "CoreDefines.h"
@@ -15,8 +13,8 @@
 
 #define TC_USE_CONSOLE
 
-HGLRC           hRC = NULL;
-HDC             hDC = NULL;
+HGLRC           hRC = nullptr;
+HDC             hDC = nullptr;
 
 float input_x = 0.0f;
 float input_y = 0.0f;
@@ -56,35 +54,35 @@ bool OpenGL_Init(HWND hWnd)
 	if (!(hDC = GetDC(hWnd)))
 	{
 		OpenGL_Release(hWnd);
-		MessageBox(NULL, "Can't Create A GL Device Context.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(nullptr, "Can't Create A GL Device Context.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}		
 
 	if (!(PixelFormat = ChoosePixelFormat(hDC, &pfd)))
 	{
 		OpenGL_Release(hWnd);
-		MessageBox(NULL, "Can't Find A Suitable PixelFormat.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
+		MessageBox(nullptr, "Can't Find A Suitable PixelFormat.", "ERROR", MB_OK | MB_ICONEXCLAMATION);
 		return false;
 	}		
 
 	if(!SetPixelFormat(hDC, PixelFormat, &pfd))
 	{
 		OpenGL_Release(hWnd);
-		MessageBox(NULL, "Can't Set The PixelFormat.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(nullptr, "Can't Set The PixelFormat.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
 		return false;
 	}		
 	
 	if (!(hRC = wglCreateContext(hDC)))
 	{
 		OpenGL_Release(hWnd);
-		MessageBox(NULL, "Can't Create A GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(nullptr, "Can't Create A GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
 		return false;
 	}		
 	
 	if(!wglMakeCurrent(hDC, hRC))
 	{
 		OpenGL_Release(hWnd);
-		MessageBox(NULL, "Can't Activate The GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
+		MessageBox(nullptr, "Can't Activate The GL Rendering Context.", "ERROR", MB_OK|MB_ICONEXCLAMATION);
 		return false;
 	}		
 	
@@ -95,17 +93,17 @@ void OpenGL_Release(HWND hWnd)
 {
 	if (hRC)
 	{		
-		if (!wglMakeCurrent(NULL,NULL))
+		if (!wglMakeCurrent(nullptr,nullptr))
 		{		
-			MessageBox(NULL, "Release Of DC And RC Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+			MessageBox(nullptr, "Release Of DC And RC Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
 		}		
 
 		if (!wglDeleteContext(hRC))
 		{		
-			MessageBox(NULL, "Release Rendering Context Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
+			MessageBox(nullptr, "Release Rendering Context Failed.", "SHUTDOWN ERROR", MB_OK | MB_ICONINFORMATION);
 		}
 
-		hRC = NULL;
+		hRC = nullptr;
 	}		
 
 	ReleaseDC(hWnd, hDC);
@@ -212,57 +210,24 @@ LRESULT WINAPI MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		case WM_KEYDOWN:
 			switch (wParam)
 			{
-				case 'W':
+				/*case 'W':
 					gameControls.movement.y = 1.0f;
 					break;
 				case 'S':
 					gameControls.movement.y = -1.0f;
-					break;
-				//case VK_CONTROL:
-				//	menu_override_game_boost = true;
-				//	break;
-				//case VK_ESCAPE:
-				//	system_button_back = true;
-				//	break;
-				//case VK_SHIFT:
-				//	menu_override_game_stop = true;
-				//	break;
-				//case VK_SPACE:
-				//	menu_override_game_bite = true;
-				//	break;
-				//case 0x52:
-				//	menu_override_game_restart = true;
-				//	break;
-				//case 116:
-				//	Menu_UpdateConfigs();
-				//	break;
+					break;*/
 			}
 			break;
 
 		case WM_KEYUP:
 			switch (wParam)
 			{
-				case 'W':
+				/*case 'W':
 					gameControls.movement.y = 0.0f;
 					break;
 				case 'S':
 					gameControls.movement.y = 0.0f;
-					break;
-				//case VK_CONTROL:
-				//	menu_override_game_boost = false;
-				//	break;
-				//case VK_ESCAPE:
-				//	system_button_back = false;
-				//	break;
-				//case VK_SHIFT:
-				//	menu_override_game_stop = false;
-				//	break;
-				//case VK_SPACE:
-				//	menu_override_game_bite = false;
-				//	break;
-				//case 0x52:
-				//	menu_override_game_restart = false;
-				//	break;
+					break;*/
 			}
 			break;
 		
@@ -291,17 +256,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wc.cbClsExtra    = 0;
 	wc.cbWndExtra    = 0;
 	wc.hInstance     = hInstance;
-	wc.hIcon         = NULL;
-	wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
-	wc.hbrBackground = NULL;
-	wc.lpszMenuName  = NULL;
+	wc.hIcon         = nullptr;
+	wc.hCursor       = LoadCursor (nullptr,IDC_ARROW);
+	wc.hbrBackground = nullptr;
+	wc.lpszMenuName  = nullptr;
 	wc.lpszClassName = "tremor_core";
 
 	if (!RegisterClass (&wc))
 		return 0;
 
 	HWND hWnd = CreateWindowEx(0, "tremor_core", "CSM", WS_OVERLAPPED | WS_EX_TOPMOST | WS_CAPTION | WS_BORDER | WS_SYSMENU,
-							   100, 100, V_SX, V_SY, NULL, NULL, hInstance, NULL);
+							   100, 100, V_SX, V_SY, nullptr, nullptr, hInstance, nullptr);
     
 	RECT window_rect;
 	GetWindowRect(hWnd, &window_rect);
@@ -335,7 +300,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	
 	while (msg.message != WM_QUIT)
 	{
-		if (PeekMessage(&msg,NULL, 0U, 0U, PM_REMOVE))
+		if (PeekMessage(&msg,nullptr, 0U, 0U, PM_REMOVE))
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
@@ -349,8 +314,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		Sleep(15);
 	}
 	
-	GameConfig_Save();
-
 	Core_Release();
 
 	OpenGL_Release(hWnd);

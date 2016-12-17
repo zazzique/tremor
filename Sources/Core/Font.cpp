@@ -148,12 +148,12 @@ void Font_Add(char *font_name)
 	
 	int kernings_counter = 0;
 	
-	char *content = NULL;
+	char *content = nullptr;
 	I32 content_size;
 
 	Files_GetData(&font_file, (void **)&content, &content_size);
 
-	if (content == NULL)
+	if (content == nullptr)
 	{
 		LogPrint("Error: font '%s' not found!\n", font_name);
 		return;
@@ -161,13 +161,13 @@ void Font_Add(char *font_name)
 	
 	content[content_size - 1] = '\0';
 	
-	char *cur_exp = NULL;
+	char *cur_exp = nullptr;
 	cur_exp = strtok (content, FONT_PARSE_SEPARATORS);
 	
-	while (cur_exp != NULL)
+	while (cur_exp != nullptr)
 	{
-		cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
-		if (cur_exp == NULL)
+		cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
+		if (cur_exp == nullptr)
 			break;
 		
 		if (strcicmp(cur_exp, "info") == 0)
@@ -186,7 +186,7 @@ void Font_Add(char *font_name)
 			
 			if (strcicmp(cur_exp, "unicode") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				if (atoi(cur_exp) != 0)
 				{
 					LogPrint("Error: unicode fonts are not supported!\n");
@@ -198,11 +198,11 @@ void Font_Add(char *font_name)
 
 			if (strcicmp(cur_exp, "smooth") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].smooth = atoi(cur_exp);
 				continue;
 			}
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 		
 		if (parsing_group == FONT_PG_COMMON)
@@ -215,13 +215,13 @@ void Font_Add(char *font_name)
 			
 			if (strcicmp(cur_exp, "lineHeight") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].line_height = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "scaleW") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				float div_tmp = (float)atof(cur_exp);
 				if (div_tmp <= 0.0f)
 					div_tmp = FLT_EPSILON;
@@ -230,7 +230,7 @@ void Font_Add(char *font_name)
 			}
 			if (strcicmp(cur_exp, "scaleH") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				float div_tmp = (float)atof(cur_exp);
 				if (div_tmp <= 0.0f)
 					div_tmp = FLT_EPSILON;
@@ -239,7 +239,7 @@ void Font_Add(char *font_name)
 			}
 			if (strcicmp(cur_exp, "pages") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				if (atoi(cur_exp) != 1)
 				{
 					LogPrint("Error: too many pages in font!\n");
@@ -248,7 +248,7 @@ void Font_Add(char *font_name)
 				}
 				continue;
 			}
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 		
 		if (parsing_group == FONT_PG_PAGE)
@@ -270,11 +270,11 @@ void Font_Add(char *font_name)
 			
 			if (strcicmp(cur_exp, "file") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				strcpy(fonts[fonts_count].texture, cur_exp);
 				continue;
 			}
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 		
 		if (parsing_group == FONT_PG_CHARS)
@@ -284,7 +284,7 @@ void Font_Add(char *font_name)
 				parsing_group = FONT_PG_CHAR;
 				continue;
 			}
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 		
 		if (parsing_group == FONT_PG_CHAR)
@@ -302,53 +302,53 @@ void Font_Add(char *font_name)
 			
 			if (strcicmp(cur_exp, "id") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				char_id = atoi(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "x") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].x = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "y") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].y = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "width") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].width = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "height") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].height = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "xoffset") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].x_offset = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "yoffset") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].y_offset = (float)atof(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "xadvance") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].font_chars[char_id].x_advance = (float)atof(cur_exp);
 				continue;
 			}
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 		
 		if (parsing_group == FONT_PG_KERNINGS)
@@ -361,7 +361,7 @@ void Font_Add(char *font_name)
 			}
 			if (strcicmp(cur_exp, "count") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				fonts[fonts_count].kerning_table_size = atoi(cur_exp);
 				
 				if (fonts[fonts_count].kerning_table_size >= MAX_KERNINGS_COUNT)
@@ -373,7 +373,7 @@ void Font_Add(char *font_name)
 				continue;
 			}
 			
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 
 		if (parsing_group == FONT_PG_KERNING)
@@ -392,23 +392,23 @@ void Font_Add(char *font_name)
 			
 			if (strcicmp(cur_exp, "first") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				kerning_table[kernings_counter - 1].first_char = atoi(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "second") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				kerning_table[kernings_counter - 1].second_char = atoi(cur_exp);
 				continue;
 			}
 			if (strcicmp(cur_exp, "amount") == 0)
 			{
-				cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+				cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 				kerning_table[kernings_counter - 1].amount = (float)atof(cur_exp);
 				continue;
 			}
-			cur_exp = strtok (NULL, FONT_PARSE_SEPARATORS);
+			cur_exp = strtok (nullptr, FONT_PARSE_SEPARATORS);
 		}
 	}
 	
@@ -459,9 +459,9 @@ void Font_Add(char *font_name)
 
 void Font_PrintText(float x, float y, float text_scale, U32 text_color, char *text, U32 flags, char *font_name)
 {
-	if (text == NULL)
+	if (text == nullptr)
 		return;
-	if (font_name == NULL)
+	if (font_name == nullptr)
 		return;
 	
 	int current_font = -1;
@@ -705,11 +705,11 @@ void Font_Render()
 
 void Font_GetTextSize(char *text, char *font_name, Vector2D *size)
 {
-	if (text == NULL)
+	if (text == nullptr)
 		return;
-	if (font_name == NULL)
+	if (font_name == nullptr)
 		return;
-	if (size == NULL)
+	if (size == nullptr)
 		return;
 	
 	int current_font = -1;
