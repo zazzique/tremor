@@ -219,9 +219,12 @@ int RendererGL10_GetGLBlendType(Renderer::BlendType type)
 
 Renderer* Renderer::Create(const ApplicationSettings& settings)
 {
-	Renderer* result = nullptr;
+	if (!RendererGL10_Init(settings.hWnd))
+		return nullptr;
 
+	Renderer* result = new Renderer(settings);
 
+	return result;
 }
 
 Renderer::Renderer(const ApplicationSettings& settings)
@@ -239,14 +242,14 @@ Renderer::Renderer(const ApplicationSettings& settings)
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    Renderer::EnableDepthMask();
+    this->EnableDepthMask();
 	glDepthFunc(GL_LEQUAL);
-	Renderer::EnableDepthTest();
+	this->EnableDepthTest();
 	glEnable(GL_CULL_FACE);
-	Renderer::SetBlendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
-	Renderer::DisableBlend();
+	this->SetBlendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA);
+	this->DisableBlend();
     glAlphaFunc(GL_GREATER, 0.0f);
-    Renderer::DisableAlphaTest();
+    this->DisableAlphaTest();
 
 	Renderer::EnableVertexArray();
     Renderer::EnableColorArray();

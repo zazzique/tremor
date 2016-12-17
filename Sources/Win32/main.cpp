@@ -211,7 +211,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	MoveWindow( hWnd, w_x, w_y, w_sx, w_sy, true );
 
 
-	Core::ApplicationSettings settings;
+	ApplicationSettings settings;
 	settings.screen_width = V_SX;
 	settings.screen_height = V_SY;
 

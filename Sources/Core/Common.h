@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <assert.h>
 #include <ctype.h> // TODO: remove unused
 #include <stdio.h>
 #include <stdlib.h>

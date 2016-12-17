@@ -5,10 +5,9 @@
 #include "Vector.h"
 #include "Files.h"
 #include "Timer.h"
-#include "TextureManager.h"
+#include "Texture.h"
 #include "Font.h"
 #include "Sprites.h"
-#include "GUIControls.h"
 #include "Game.h"
 #include "Core.h"
 
@@ -36,7 +35,6 @@ Core::Core(const ApplicationSettings& settings)
 	TexManager_Init();
 	Font_Init();
 	Sprites_Init();
-	GUI_Init();
 
 	Game_Init();
 }
@@ -45,7 +43,6 @@ Core::~Core()
 {
 	Game_Release();
 
-	GUI_Release();
 	Sprites_Release();
 	Font_Release();
 	TexManager_Release();
@@ -129,32 +126,32 @@ void Core::UnloadResources()
 
 void Core::InputTouchBegan(float x, float y)
 {
-	GUI_TouchBegan(x, y);
+	//GUI_TouchBegan(x, y);
 }
 
 void Core::InputTouchMoved(float x, float y)
 {
-    int touch_id = GUI_GetTouchByLocation(x, y);
+    //int touch_id = GUI_GetTouchByLocation(x, y);
     
-    if (touch_id < 0)
-        return;
+    //if (touch_id < 0)
+    //    return;
     
-	GUI_TouchMoved(touch_id, x, y);
+	//GUI_TouchMoved(touch_id, x, y);
 }
 
 void Core::InputTouchEnded(float x, float y)
 {
-    int touch_id = GUI_GetTouchByLocation(x, y);
+    //int touch_id = GUI_GetTouchByLocation(x, y);
     
-    if (touch_id < 0)
-        return;
+    //if (touch_id < 0)
+    //    return;
     
-	GUI_TouchEnded(touch_id, x, y);
+	//GUI_TouchEnded(touch_id, x, y);
 }
 
 void Core::TouchesReset()
 {
-	GUI_TouchesReset();
+	//GUI_TouchesReset();
 }
 
 

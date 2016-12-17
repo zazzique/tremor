@@ -7,10 +7,9 @@
 #include "Timer.h"
 #include "Files.h"
 #include "Locale.h"
-#include "TextureManager.h"
+#include "Texture.h"
 #include "Font.h"
 #include "Sprites.h"
-#include "GUIControls.h"
 #include "Renderer.h"
 #include "Game.h"
 
@@ -31,8 +30,8 @@ void Game_Process()
 
 void Game_Render()
 {
-	float background_color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
-	Render_Clear(background_color[0], background_color[1], background_color[2], background_color[3]);
+	//float background_color[4] = { 0.1f, 0.1f, 0.1f, 1.0f };
+	//Render_Clear(background_color[0], background_color[1], background_color[2], background_color[3]);
 
 	/*Render_EnableDepthMask();
     Render_EnableDepthTest();
