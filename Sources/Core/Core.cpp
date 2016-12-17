@@ -10,8 +10,6 @@
 #include "Font.h"
 #include "Sprites.h"
 #include "GUIControls.h"
-#include "ModelManager.h"
-#include "Sound.h"
 #include "Game.h"
 #include "Core.h"
 
@@ -116,13 +114,11 @@ void Core_Release()
 {
 	Game_Release();
 
-	ModelManager_Release();
 	GUI_Release();
 	Sprites_Release();
 	Font_Release();
 	TexManager_Release();
 	Render_Release();
-    Sound_Release();
 	Files_Release();
 }
 

@@ -1,6 +1,5 @@
 
-#ifndef _FONT_H_
-#define _FONT_H_
+#pragma once
 
 #define TEXT_ALIGN_LEFT 0x00000000
 #define TEXT_ALIGN_RIGHT 0x00000001
@@ -15,5 +14,5 @@ void Font_GetTextSize(char *text, char *font_name, Vector2D *size);
 void Font_Render();
 void Font_Release();
 
-#endif /* _FONT_H_ */
+
 

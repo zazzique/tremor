@@ -1,14 +1,5 @@
-//
-//  Files.h
-//  Carnivores
-//
-//  Created by Dmitry Nechay on 23.10.09.
-//  Copyright 2009 Action Forms. All rights reserved.
-//
 
-#ifndef _FILES_H_
-#define _FILES_H_
-
+#pragma once
 
 typedef struct _FileHandler
 {
@@ -38,5 +29,4 @@ void Files_SetPos(FileHandler *file, int pos);
 void Files_CloseFile(FileHandler *file);
 
 
-#endif /* _FILES_H_ */
 

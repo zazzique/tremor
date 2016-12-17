@@ -1,8 +1,7 @@
 
-#ifndef _CORE_DEFINES_H_
-#define _CORE_DEFINES_H_
+#pragma once
 
-#define DESIRED_FPS 60.0
+#define DESIRED_FPS 60.0 // TODO: remove unused
 
 #define SCREEN_SIZE_SMALL  0 // TODO: move to core scope
 #define SCREEN_SIZE_NORMAL 1
@@ -13,5 +12,3 @@
 #define STR_DEFAULT_SOUND_EXTENTION ".wav"
 
 #define CONTENT_PARSE_SEPARATORS " \n\r=\t\","
-
-#endif

@@ -1,13 +1,5 @@
-//
-//  GUIControls.h
-//  Carnivores
-//
-//  Created by Dmitry Nechay on 25.08.09.
-//  Copyright 2009 Action Forms. All rights reserved.
-//
 
-#ifndef _GUI_CONTROLS_H_
-#define _GUI_CONTROLS_H_
+#pragma once
 
 #define GUI_CONTROL_ALIGN_LEFT 0x00000001
 #define GUI_CONTROL_ALIGN_RIGHT 0x00000002
@@ -81,4 +73,3 @@ int GUI_ProcessEvents(int *event_id, float delta_time);
 void GUI_RenderFade();
 void GUI_Release();
 
-#endif /* _GUI_CONTROLS_H_ */

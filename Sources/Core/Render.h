@@ -1,6 +1,5 @@
 
-#ifndef _TREMOR_RENDER_H_
-#define _TREMOR_RENDER_H_
+#pragma once
 
 enum TRVariableType
 {
@@ -98,4 +97,3 @@ void Render_SetIndexArray(void *pointer, enum TRVariableType type);
 
 void Render_DrawArrays(enum TRPrimitiveType primitive_type, int vertex_count);
 
-#endif /* _TREMOR_RENDER_H_ */

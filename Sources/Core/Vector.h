@@ -1,6 +1,5 @@
 
-#ifndef _VECTOR_H_
-#define _VECTOR_H_
+#pragma once
 
 #define OutsideFrustum	0x00
 #define InsideFrustum	0x01
@@ -215,4 +214,3 @@ typedef struct _Camera
 	float gamma;
 } Camera;
 
-#endif /* _VECTOR_H_ */

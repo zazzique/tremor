@@ -1,6 +1,5 @@
 
-#ifndef _TEXTURE_MANAGER_H_
-#define _TEXTURE_MANAGER_H_
+#pragma once
 
 #define TEXTURE_FLAG_CLAMPED 0x80000000
 #define TEXTURE_FLAG_NEAREST 0x40000000
@@ -22,4 +21,3 @@ void TexManager_RemoveTexturesByFlag(U32 user_flag);
 void TexManager_RemoveAllTextures();
 void TexManager_Release();
 
-#endif /* _TEXTURE_MANAGER_H_ */

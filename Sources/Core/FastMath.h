@@ -1,13 +1,5 @@
-//
-//  FastMath.h
-//  Carnivores
-//
-//  Created by Dmitry Nechay on 18.08.09.
-//  Copyright 2009 Action Forms. All rights reserved.
-//
 
-#ifndef _FAST_MATH_H_
-#define _FAST_MATH_H_
+#pragma once
 
 #include "Common.h"
 
@@ -119,5 +111,3 @@ inline void BoundAngle_Minus90_90_Deg(float *a)
 void DeltaFunc(float *a, float b, float d);
 
 float MathWave(float a);
-
-#endif /* _FAST_MATH_H_ */

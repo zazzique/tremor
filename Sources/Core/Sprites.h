@@ -1,6 +1,5 @@
 
-#ifndef _SPRITES_H_
-#define _SPRITES_H_
+#pragma once
 
 #define SPRITE_CENTERED 0x00000000
 #define SPRITE_ALIGN_LEFT 0x00000001
@@ -29,5 +28,4 @@ void Sprites_SetSpriteSize(SpriteHandler *sprite_handler, const Vector2D *size);
 void Sprites_Render();
 void Sprites_Release();
 
-#endif /* _SPRITES_H_ */
 

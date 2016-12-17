@@ -10,9 +10,6 @@
     <ClCompile Include="..\..\Sources\Win32\glues_project.c">
       <Filter>Win32</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\GameVariables.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Game\Game.cpp">
       <Filter>Game</Filter>
     </ClCompile>
@@ -37,13 +34,7 @@
     <ClCompile Include="..\..\Sources\Core\Sprites.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Core\Sound.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Win32\Render.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Core\ModelManager.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Core\GUIControls.cpp">
@@ -61,29 +52,11 @@
     <ClCompile Include="..\..\Sources\Core\Core.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\Level.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\Player.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Core\Parser.cpp">
       <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Core\Utils.cpp">
       <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\Items.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\Monsters.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\Scripter.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Game\Weapons.cpp">
-      <Filter>Game</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -120,12 +93,6 @@
     <ClInclude Include="..\..\Sources\Game\Game.h">
       <Filter>Game</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\GameDefines.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\GameVariables.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Win32\GLee.h">
       <Filter>Win32</Filter>
     </ClInclude>
@@ -135,13 +102,7 @@
     <ClInclude Include="..\..\Sources\Core\GUIControls.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Core\ModelManager.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Win32\Render.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Core\Sound.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Sprites.h">
@@ -159,29 +120,11 @@
     <ClInclude Include="..\..\Sources\Core\TextureManager.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\Level.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\Player.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Parser.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Utils.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\Items.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\Monsters.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\Scripter.h">
-      <Filter>Game</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Game\Weapons.h">
-      <Filter>Game</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

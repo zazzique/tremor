@@ -98,39 +98,5 @@ void HSV2RGB(float *color_rgb, float *color_hsv)
 	}
 }
 
-float RandFloat()
-{
-	return (float)rand()/(float)RAND_MAX;
-}
-
-int strcicmp(char const* a, char const* b)
-{
-    for (;; a++, b++)
-	{
-        int d = tolower(*a) - tolower(*b);
-        if (d != 0 || !*a)
-            return d;
-    }
-}
-
-void trimwhitespace(char* out, char const* in)
-{
-	char* c = out;
-
-	for (int i = 0; i < strlen(in) + 1; i ++)
-	{
-        if (in[i] == ' ' || in[i] == '\t')
-		{
-			if (i == 0)
-				continue;
-
-			if (in[i - 1] == ' ' || in[i - 1] == '\t')
-				continue;
-		}
-
-		*c = in[i];
-		c ++;
-    }
-}
 
 
