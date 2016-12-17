@@ -1,6 +1,12 @@
 
 #pragma once
 
+class Texture
+{
+private:
+	int index = -1;
+}
+
 class TextureManager
 {
 	TextureManager();
