@@ -2,8 +2,9 @@
 #pragma once
 
 #include "Common.h"
+#include "Core.h"
 
-void Game_Init();
+void Game_Init(Core *core);
 void Game_Release();
 
 void Game_Process();

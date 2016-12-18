@@ -13,18 +13,6 @@
     <ClCompile Include="..\..\Sources\Core\Vector.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Core\TextureManager.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Core\Sprites.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Core\GUIControls.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Sources\Core\Font.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Core\FastMath.cpp">
       <Filter>Core</Filter>
     </ClCompile>
@@ -49,6 +37,9 @@
     <ClCompile Include="..\..\Sources\Core\Renderer_Win32.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Core\Texture.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Core\Common.h">
@@ -69,25 +60,13 @@
     <ClInclude Include="..\..\Sources\Win32\main.h">
       <Filter>Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Core\Font.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Game\Game.h">
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Win32\GLee.h">
       <Filter>Win32</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Core\GUIControls.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Core\Sprites.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Vector.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Core\TextureManager.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Utils.h">
@@ -103,6 +82,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Renderer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Core\Texture.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

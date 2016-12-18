@@ -17,12 +17,9 @@
     <ClInclude Include="..\..\Sources\Core\CoreDefines.h" />
     <ClInclude Include="..\..\Sources\Core\FastMath.h" />
     <ClInclude Include="..\..\Sources\Core\Files.h" />
-    <ClInclude Include="..\..\Sources\Core\Font.h" />
-    <ClInclude Include="..\..\Sources\Core\GUIControls.h" />
     <ClInclude Include="..\..\Sources\Core\Log.h" />
     <ClInclude Include="..\..\Sources\Core\Renderer.h" />
-    <ClInclude Include="..\..\Sources\Core\Sprites.h" />
-    <ClInclude Include="..\..\Sources\Core\TextureManager.h" />
+    <ClInclude Include="..\..\Sources\Core\Texture.h" />
     <ClInclude Include="..\..\Sources\Core\Timer.h" />
     <ClInclude Include="..\..\Sources\Core\Utils.h" />
     <ClInclude Include="..\..\Sources\Core\Vector.h" />
@@ -35,12 +32,9 @@
     <ClCompile Include="..\..\Sources\Core\FastMath.cpp" />
     <ClCompile Include="..\..\Sources\Core\Files.cpp" />
     <ClCompile Include="..\..\Sources\Core\Files_Win32.cpp" />
-    <ClCompile Include="..\..\Sources\Core\Font.cpp" />
-    <ClCompile Include="..\..\Sources\Core\GUIControls.cpp" />
     <ClCompile Include="..\..\Sources\Core\Log_Win32.cpp" />
     <ClCompile Include="..\..\Sources\Core\Renderer_Win32.cpp" />
-    <ClCompile Include="..\..\Sources\Core\Sprites.cpp" />
-    <ClCompile Include="..\..\Sources\Core\TextureManager.cpp" />
+    <ClCompile Include="..\..\Sources\Core\Texture.cpp" />
     <ClCompile Include="..\..\Sources\Core\Timer_Win32.cpp" />
     <ClCompile Include="..\..\Sources\Core\Utils.cpp" />
     <ClCompile Include="..\..\Sources\Core\Vector.cpp" />

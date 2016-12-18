@@ -212,6 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	ApplicationSettings settings;
+	settings.hWnd = hWnd;
 	settings.screen_width = V_SX;
 	settings.screen_height = V_SY;
 

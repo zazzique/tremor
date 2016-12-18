@@ -8,7 +8,7 @@
 #include "Renderer.h"
 #include "Texture.h"
 
-
+std::vector<Texture *> Texture::textures;
 Texture* Texture::current_texture = nullptr;
 
 Texture::Texture(const std::string& _name, const bool _clamped, const bool _nearest, Renderer* const _renderer)
@@ -18,8 +18,8 @@ Texture::Texture(const std::string& _name, const bool _clamped, const bool _near
 	nearest = _nearest;
 	renderer = _renderer;
 
-	if (textures.capacity() == 0)
-		textures.reserve(512);
+	if (textures.empty())
+		textures.reserve(128);
 }
 
 Texture::~Texture()
@@ -32,17 +32,36 @@ Texture::~Texture()
 
 void Texture::Delete(Texture *texture)
 {
-	textures.erase(std::remove(textures.begin(), textures.end(), texture), textures.end());
+	if (texture == nullptr)
+		return;
+
+	if (std::find(textures.begin(), textures.end(), texture) == textures.end())
+		return;
+
+	if (texture->references_count > 1)
+		texture->references_count --;
+	else
+		textures.erase(std::remove(textures.begin(), textures.end(), texture), textures.end());
+
+	texture = nullptr;
+}
+
+void Texture::DeleteAll()
+{
+	textures.erase(textures.begin(), textures.end());
 }
 
 Texture* Texture::Create(const std::string& name, bool clamped, bool nearest, Renderer* const renderer)
 {
-	assert(textures.size() >= textures.max_size() - 1);
+	assert(textures.size() < textures.max_size() - 1);
 
 	for (auto tex : textures)
 	{
 		if (tex->filename == name)
+		{
+			tex->references_count ++;
 			return tex;
+		}
 	}
 
 	Texture* texture = new Texture(name, clamped, nearest, renderer);
@@ -52,6 +71,7 @@ Texture* Texture::Create(const std::string& name, bool clamped, bool nearest, Re
 
 	if (Texture::Load(*texture))
 	{
+		texture->references_count ++;
 		textures.push_back(texture);
 	}
 	else
@@ -62,7 +82,7 @@ Texture* Texture::Create(const std::string& name, bool clamped, bool nearest, Re
 			texture = nullptr;
 		}
 	}
-	
+
 	return texture;
 }
 

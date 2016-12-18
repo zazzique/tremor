@@ -6,8 +6,6 @@
 #include "Files.h"
 #include "Timer.h"
 #include "Texture.h"
-#include "Font.h"
-#include "Sprites.h"
 #include "Game.h"
 #include "Core.h"
 
@@ -32,23 +30,28 @@ Core::Core(const ApplicationSettings& settings)
 
 	renderer = Renderer::Create(appSettings);
 
-	TexManager_Init();
-	Font_Init();
-	Sprites_Init();
+	//TexManager_Init();
+	//Font_Init();
+	//Sprites_Init();
 
-	Game_Init();
+	Game_Init(this);
 }
 
 Core::~Core()
 {
 	Game_Release();
 
-	Sprites_Release();
-	Font_Release();
-	TexManager_Release();
+	//Sprites_Release();
+	//Font_Release();
+	//TexManager_Release();
 
-	if (renderer != nullptr)
+	Texture::DeleteAll();
+
+	if (renderer != nullptr) // TODO: template func for safe delete
+	{
 		delete renderer;
+		renderer = nullptr;
+	}
 
 	Files_Release();
 }
@@ -102,9 +105,9 @@ void Core::Render()
 {
 	Game_Render();
 	
-    GUI_DrawControls();
-    Sprites_Render();
-    Font_Render();
+    //GUI_DrawControls();
+    //Sprites_Render();
+    //Font_Render();
 
 	renderer->SwapBuffers();
 }

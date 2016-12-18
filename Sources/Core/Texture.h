@@ -21,6 +21,8 @@ private:
 
 	Renderer* renderer = nullptr;
 
+	int references_count = 0;
+
 private:
 	Texture(const std::string& _name, const bool _clamped, const bool _nearest, Renderer* const _renderer);
 	~Texture();
@@ -28,6 +30,7 @@ private:
 public:
 	static Texture* Create(const std::string& name, bool clamped, bool nearest, Renderer* const _renderer);
 	static void Delete(Texture *texture);
+	static void Texture::DeleteAll();
 	
 	void Bind();
 

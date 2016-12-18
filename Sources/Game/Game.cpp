@@ -8,19 +8,27 @@
 #include "Files.h"
 #include "Locale.h"
 #include "Texture.h"
-#include "Font.h"
-#include "Sprites.h"
 #include "Renderer.h"
+#include "Core.h"
 #include "Game.h"
 
-void Game_Init()
+void Game_Init(Core *core)
 {
-	//
+	for (int i = 0; i < 32; i ++)
+	{
+		Texture* texture = Texture::Create("gui.tga", false, false, core->renderer);
+		Texture* texture2 = Texture::Create("gui_01.tga", false, false, core->renderer);
+		Texture* texture3 = Texture::Create("gui_02.tga", false, false, core->renderer);
+		Texture::Delete(texture);
+		Texture* texture4 = Texture::Create("gui_03.tga", false, false, core->renderer);
+		Texture* texture5 = Texture::Create("gui_05.tga", false, false, core->renderer);
+	}
+
+	Texture::Delete(nullptr);
 }
 
 void Game_Release()
 {
-	//
 }
 
 void Game_Process()
