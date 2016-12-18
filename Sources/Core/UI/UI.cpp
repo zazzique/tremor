@@ -3,6 +3,22 @@
 #include "UINode.h"
 #include "UI.h"
 
+UINode::UINode(float _x, float _y, UINode* const _parent, UI* _ui)
+{
+	x = _x;
+	y = _y;
+	parent = _parent;
+
+	ui = _ui;
+}
+
+UINode::~UINode()
+{
+	if (ui != nullptr)
+		ui->RemoveFromList(this);
+}
+
+
 UI::UI()
 {
 	//
