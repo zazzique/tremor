@@ -39,15 +39,28 @@ void Texture::Delete(Texture *texture)
 		return;
 
 	if (texture->references_count > 1)
+	{
 		texture->references_count --;
+	}
 	else
+	{
+		if (texture != nullptr)
+			delete texture;
+
 		textures.erase(std::remove(textures.begin(), textures.end(), texture), textures.end());
+	}
 
 	texture = nullptr;
 }
 
 void Texture::DeleteAll()
 {
+	for (auto tex : textures)
+	{
+		if (tex != nullptr)
+			delete tex;
+	}
+
 	textures.erase(textures.begin(), textures.end());
 }
 

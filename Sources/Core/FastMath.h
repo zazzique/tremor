@@ -8,39 +8,6 @@
 
 #define pi 3.1415926536f
 
-inline int FastTrunc(float f)
-{
-	f -= 0.5f;
-	f += (3 << 22);
-	return *((int*)&f) - 0x4b400000;
-}
-
-float AngleDifference(float a, float b);
-
-inline void BoundAngle_0_360(float *a)
-{
-	while (*a < 0.0f)
-		*a += 2.0f * pi;
-    while (*a > 2.0f * pi)
-		*a -= 2.0f * pi;
-}
-
-inline void BoundAngle_0_360_Deg(float *a)
-{
-	while (*a < 0.0f)
-		*a += 360.0f;
-    while (*a > 360.0f)
-		*a -= 360.0f;
-}
-
-inline void BoundAngle_Minus90_90_Deg(float *a)
-{
-	if (*a < -90.0f)
-		*a = -90.0f;
-    if (*a > 90.0f)
-		*a = 90.0f;
-}
-
 #ifndef SQR
     #define SQR(x)     ((x) * (x))
 #endif

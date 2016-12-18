@@ -40,6 +40,12 @@
     <ClCompile Include="..\..\Sources\Core\Texture.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Core\UI\UI.cpp">
+      <Filter>Core\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Core\UI\UINode.cpp">
+      <Filter>Core\UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Core\Common.h">
@@ -86,6 +92,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Core\Texture.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Core\UI\UI.h">
+      <Filter>Core\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Core\UI\UINode.h">
+      <Filter>Core\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
